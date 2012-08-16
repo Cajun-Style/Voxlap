@@ -12349,7 +12349,6 @@ void voxsetframebuffer (long p, long b, long x, long y)
 			ofogdist = vx5.maxscandist;
 
 			//foglut[?>>20] = MIN(?*32767/vx5.maxscandist,32767)
-#if 0
 			long j, k, l;
 			j = 0; l = 0x7fffffff/vx5.maxscandist;
 			for(i=0;i<2048;i++)
@@ -12359,63 +12358,6 @@ void voxsetframebuffer (long p, long b, long x, long y)
 				foglut[i] = (((int64_t)k)<<32)+(((int64_t)k)<<16)+((int64_t)k);
 			}
 			while (i < 2048) foglut[i++] = all32767;
-#else
-			i = 0x7fffffff/vx5.maxscandist;
-			#if defined(__GNUC__) && !defined(__NOASM__) //AT&T SYNTAX ASSEMBLY
-			__asm__ __volatile__
-			(
-				".intel_syntax noprefix\n"
-				"xor	eax, eax\n"
-				"mov	ecx, -2048*8\n"
-			".Lfogbeg:\n"
-				"movd	mm0, eax\n"
-				"add	eax, edx\n"
-				"jo	short .Lfogend\n"
-				"pshufw	mm0, mm0, 0x55\n"
-				"movq	foglut[ecx+2048*8], mm0\n"
-				"add	ecx, 8\n"
-				"js	short .Lfogbeg\n"
-				"jmp	short .Lfogend2\n"
-			".Lfogend:\n"
-				"movq	mm0, all32767\n"
-			".Lfogbeg2:\n"
-				"movq	foglut[ecx+2048*8], mm0\n"
-				"add	ecx, 8\n"
-				"js	short .Lfogbeg2\n"
-			".Lfogend2:\n"
-				"emms\n"
-				".att_syntax prefix\n"
-				:
-				: [i] "d" (i)
-				: "eax", "ecx", "mm0"
-			);
-			#endif
-			#if defined(_MSC_VER) && !defined(__NOASM__) //MASM SYNTAX ASSEMBLY
-			_asm
-			{
-				xor	eax, eax
-				mov	ecx, -2048*8
-				mov	edx, i
-			fogbeg:
-				movd	mm0, eax
-				add	eax, edx
-				jo	short fogend
-				pshufw	mm0, mm0, 0x55
-				movq	foglut[ecx+2048*8], mm0
-				add	ecx, 8
-				js	short fogbeg
-				jmp	short fogend2
-			fogend:
-				movq	mm0, all32767
-			fogbeg2:
-				movq	foglut[ecx+2048*8], mm0
-				add	ecx, 8
-				js	short fogbeg2
-			fogend2:
-				emms
-			}
-			#endif
-#endif
 		}
 	} else ofogdist = -1;
 
