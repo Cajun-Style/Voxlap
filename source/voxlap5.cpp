@@ -9946,32 +9946,6 @@ long surroundcapture32bit (dpoint3d *pos, const char *fname, long boxsiz)
 	return(0);
 }
 
-#if 0
-  //This doesn't speed it up and it only makes it crash on some computers :/
-static inline void fixsse ()
-{
-	static long asm32;
-	#if defined(__GNUC__) && !defined(__NOASM__) //AT&T SYNTAX ASSEMBLY
-	__asm__ __volatile__
-	(
-		".intel_syntax noprefix\n"
-		"stmxcsr	[asm32]\n" //Default is:0x1f80
-		"or	asm32, 0x8040\n"   //enable ftz&daz to prevent slow denormals!
-		"ldmxcsr	[asm32]\n"
-		".att_syntax prefix\n"
-	);
-	#endif
-	#if defined(_MSC_VER) && !defined(__NOASM__) //MASM SYNTAX ASSEMBLY
-	_asm
-	{
-		stmxcsr	[asm32]   //Default is:0x1f80
-		or	asm32, 0x8040 //enable ftz&daz to prevent slow denormals!
-		ldmxcsr	[asm32]
-	}
-	#endif
-}
-#endif
-
 void freekv6 (kv6data *kv6)
 {
 	if (kv6->lowermip) freekv6(kv6->lowermip); //NOTE: dangerous - recursive!
