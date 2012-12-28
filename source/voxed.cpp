@@ -153,10 +153,6 @@ void *colfunclst[] =
 };
 #define numcolfunc (sizeof(colfunclst)>>2)
 
-#ifdef _MSC_VER //MASM SYNTAX ASSEMBLY
-	#pragma warning(disable:4799) //I know how to use EMMS
-#endif
-
 	//RGB color selection variables
 #define CGRAD 64
 float fcmousx, fcmousy;
