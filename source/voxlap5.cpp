@@ -7822,7 +7822,7 @@ static void kv6draw (vx5sprite *spr)
 	}
 	if (x < 0) x = 0;
 	if (inx > xres_voxlap) inx = xres_voxlap;
-	if (y < 0) y = 0;draw
+	if (y < 0) y = 0;
 	if (iny > yres_voxlap) iny = yres_voxlap;
 	if (x < inx)
 		for(inz=y;inz<iny;inz++)
