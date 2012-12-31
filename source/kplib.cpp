@@ -1836,7 +1836,7 @@ static int kpegrend (const char *kfilebuf, int kfilength,
 															ch = *kfileptr++; if (ch == 255) kfileptr++;
 															num = (num<<8)+((int)ch); curbits += 8;
 														}
-														if (num&(pow2long[--curbits])) dcs[z] += (short)Alut[dcs[z] < 0];
+														if ((num&(pow2long[--curbits]))) dcs[z] += (short)Alut[dcs[z] < 0];
 												  } else if (--zz < 0) break;
 												  z++;
 												} while (z <= Se);

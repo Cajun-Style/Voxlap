@@ -11,7 +11,7 @@ locBIN            =./binaries
 build            ?=Debug
 
 # "win" for Windows 32-bit, "posix" for POSIX (32-bit for now)
-PLATdep          ?=posix
+PLATdep          ?=win
 
 # "1" to use v5.$(AS), "0" to not use
 USEV5ASM         ?=1

@@ -7465,12 +7465,8 @@ void equivecinit (long n)
 
 //EQUIVEC code ends -------------------------------------------------------
 
-static long umulmip[9] =
-{
-	(long)0,(long)4294967295,(long)2147483648,(long)1431655765,(long)1073741824,
-	(long)858993459,(long)715827882,(long)613566756,(long)536870912
-};
-
+static uintptr_t umulmip[9] = {0,4294967295,2147483648,1431655765,1073741824,
+								  858993459,715827882,613566756,536870912};
 /**
  * Generate 1 more mip-level for a .KV6 sprite. This function generates a
  * lower MIP level only if kv6->lowermip is NULL, and kv6->xsiz,
@@ -7705,16 +7701,16 @@ kv6data *getkv6 (const char *filnam)
 
 #define MAXZSIZ 1024
 	//variables now initialized here and not in assembly
-EXTERN_C __ALIGN(16) point4d caddasm[8]         = {};
-EXTERN_C __ALIGN(16) point4d ztabasm[MAXZSIZ+3] = {};
-EXTERN_C __ALIGN(16) unsigned short qsum0[4]    = {}; //[8000h-hy,8000h-hx,8000h-hy,8000h-hx]
-EXTERN_C __ALIGN(16) unsigned short qsum1[4]    = {}; //[8000h-fy,8000h-fx,8000h-fy,8000h-fx]
-EXTERN_C __ALIGN(16) unsigned short qbplbpp[4]  = {}; //[0,0,bpl,bpp]
-EXTERN_C __ALIGN(16) int64_t kv6colmul[256]     = {};
-EXTERN_C __ALIGN(16) int64_t kv6coladd[256]     = {};
-EXTERN_C __ALIGN(16) long kv6frameplace         =  0;
-EXTERN_C __ALIGN(16) long kv6bytesperline       =  0;
-EXTERN_C __ALIGN(16) float scisdist             =  0;
+__ALIGN(16) point4d caddasm[8]         = {};
+__ALIGN(16) point4d ztabasm[MAXZSIZ+3] = {};
+__ALIGN(16) unsigned short qsum0[4]    = {}; //[8000h-hy,8000h-hx,8000h-hy,8000h-hx]
+__ALIGN(16) unsigned short qsum1[4]    = {}; //[8000h-fy,8000h-fx,8000h-fy,8000h-fx]
+__ALIGN(16) unsigned short qbplbpp[4]  = {}; //[0,0,bpl,bpp]
+__ALIGN(16) int64_t kv6colmul[256]     = {};
+__ALIGN(16) int64_t kv6coladd[256]     = {};
+__ALIGN(16) long kv6frameplace         =  0;
+__ALIGN(16) long kv6bytesperline       =  0;
+__ALIGN(16) float scisdist             =  0;
 //((uint8_t *)&scisdist)[4] = { 40800000h,0,0,0};
 
 //EXTERN_C point4d caddasm[8];

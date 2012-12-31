@@ -333,7 +333,7 @@ static char *relpath (char *st)
 
 static char fileselectnam[MAX_PATH+1];
 static long fileselect1stcall = -1; //Stupid directory hack
-static char *loadfileselect (char *mess, char *spec, char *defext)
+static char *loadfileselect (const char *mess, const char *spec, const char *defext)
 {
 	long i;
 	for(i=0;fileselectnam[i];i++) if (fileselectnam[i] == '/') fileselectnam[i] = '\\';
@@ -347,7 +347,7 @@ static char *loadfileselect (char *mess, char *spec, char *defext)
 		if (!GetOpenFileName(&ofn)) return(0); else return(fileselectnam);
 	} while (0);
 }
-static char *savefileselect (char *mess, char *spec, char *defext)
+static char *savefileselect (const char *mess, const char *spec, const char *defext)
 {
 	long i;
 	for(i=0;fileselectnam[i];i++) if (fileselectnam[i] == '/') fileselectnam[i] = '\\';
@@ -374,7 +374,7 @@ static long menunamecnt = 0, menuhighlight = 0;
 
 #ifndef _WIN32
 
-static void getfilenames (char *kind)
+static void getfilenames (const char *kind)
 {
 	long i, type;
 	struct find_t fileinfo;
@@ -456,6 +456,7 @@ void sortfilenames ()
 		}
 }
 
+#if 0
 static char *fileselect (char *filespec)
 {
 	long newhighlight, i, j, topplc, menuheight = (yres-5)/6, b, x, y;
@@ -590,7 +591,6 @@ static char *fileselect (char *filespec)
 #endif
 			menunamecnt = 0; curmenuptr = menubuf;
 			getfilenames(".");
-
 			i = 0;
 			do
 			{
@@ -606,7 +606,7 @@ static char *fileselect (char *filespec)
 	}
 	return(0);
 }
-
+#endif
 //-------------------------- file select code ends ---------------------------
 
 void voxfindsuck (long cx, long cy, long cz, long *ox, long *oy, long *oz)
@@ -1340,7 +1340,7 @@ void sxldelete (long sxli, long sxlo, long numchars)
 }
 
 	//NOTE: skipuserst should be 0 except for the call from voxedloadsxl
-long insertsprite (char *filnam, char *userst, long skipuserst)
+long insertsprite (const char *filnam, const char *userst, long skipuserst)
 {
 	long i;
 
@@ -1450,9 +1450,9 @@ void deletesprite (long daspri)
 static point3d unitaxis[6] = {{1,0,0}, {-1,0,0}, {0,1,0}, {0,-1,0}, {0,0,1}, {0,0,-1}};
 static char unitaxlu[24][3] =
 {
-	0,2,4, 0,3,5, 1,2,5, 1,3,4, 0,5,2, 0,4,3, 1,4,2, 1,5,3,
-	2,0,5, 3,0,4, 2,1,4, 3,1,5, 2,4,0, 3,5,0, 2,5,1, 3,4,1,
-	4,0,2, 5,0,3, 5,1,2, 4,1,3, 5,2,0, 4,3,0, 4,2,1, 5,3,1,
+	{0,2,4}, {0,3,5}, {1,2,5}, {1,3,4}, {0,5,2}, {0,4,3}, {1,4,2}, {1,5,3},
+	{2,0,5}, {3,0,4}, {2,1,4}, {3,1,5}, {2,4,0}, {3,5,0}, {2,5,1}, {3,4,1},
+	{4,0,2}, {5,0,3}, {5,1,2}, {4,1,3}, {5,2,0}, {4,3,0}, {4,2,1}, {5,3,1}
 // Here are the 24 mirrored rotations: (remember to change to unitaxlu[48][3])
 // 0,2,5, 0,3,4, 1,2,4, 1,3,5, 0,4,2, 0,5,3, 1,5,2, 1,4,3,
 // 2,0,4, 3,0,5, 2,1,5, 3,1,4, 2,5,0, 3,4,0, 2,4,1, 3,5,1,
@@ -1865,7 +1865,7 @@ long notepadinput ()
 	long i, j, k, l, x, y, xx, yy;
 	char ch, *v;
 
-	while (i = keyread())
+	while ((i = keyread()))
 	{
 		notepadcurstime = totclk;
 		if ((i&255) && (!(i&0x3c0000)))
@@ -2586,7 +2586,8 @@ void doframe ()
 		ftol(curs[i].x-.5,&xx);
 		ftol(curs[i].y-.5,&yy);
 		ftol(curs[i].z-.5,&zz);
-		sprintf(snotbuf,"%d",i); j = strlen(snotbuf);
+		sprintf(snotbuf,"%l",i);
+                j = strlen(snotbuf);
 		if ((x-(j<<1) >= 0) && (x+(j<<1) < xres) && (y-3 >= 0) && (y+4 < yres))
 			print4x6(x-(j<<1),y-2,k*0x010101+0x6080a0,k*0x010101+0x204060,"%s",snotbuf);
 	}
@@ -2723,7 +2724,7 @@ void doframe ()
 		do
 		{
 			if (fil) fclose(fil);
-			sprintf(snotbuf,"VXL5%04d.PNG",capturecount);
+			sprintf(snotbuf,"VXL5%04l.PNG",capturecount);
 			fil = fopen(snotbuf,"rb");
 			if (fil) capturecount++;
 		} while (fil);
@@ -2881,7 +2882,7 @@ void doframe ()
 				if (vx5.maxscandist > 1536) vx5.maxscandist = 1536;
 			}
 		}
-		sprintf(message,"mip=%d max=%d",vx5.mipscandist,vx5.maxscandist);
+		sprintf(message,"mip=%l max=%l",vx5.mipscandist,vx5.maxscandist);
 		messagetimeout = totclk+4000;
 	}
 
@@ -3726,7 +3727,7 @@ void doframe ()
 		{
 			hind = 0;
 			//if (v = (char *)fileselect("*.KFA;*.KV6;*.KVX;*.VOX"))
-			ddflip2gdi(); if (v = (char *)loadfileselect("Insert voxel object...","KFA, KV6, KVX, VOX\0*.kfa;*.kv6;*.kvx;*.vox\0All files (*.*)\0*.*\0\0","KV6"))
+			ddflip2gdi(); if ((v = ((char *)loadfileselect("Insert voxel object...","KFA, KV6, KVX, VOX\0*.kfa;*.kv6;*.kvx;*.vox\0All files (*.*)\0*.*\0\0","KV6"))))
 			{
 				strcpy(tfilenam,(char *)v);
 				i = strlen(tfilenam);
@@ -3762,7 +3763,7 @@ void doframe ()
 	{
 		keystatus[0x2f] = 0;
 		//if (v = (char *)fileselect("*.PNG;*.JPG;*.JPE;*.JPEG"))
-		ddflip2gdi(); if (v = (char *)loadfileselect("Select texture...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0","PNG"))
+		ddflip2gdi(); if ((v = ((char *)loadfileselect("Select texture...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0","PNG"))))
 		{
 			strcpy(tfilenam,(char *)v);
 			if (vx5.pic) { free(vx5.pic); vx5.pic = 0; }
@@ -3840,7 +3841,7 @@ void doframe ()
 	{
 		keystatus[0x19] = 0;
 		//if (v = (char *)fileselect("*.PNG;*.JPG;*.JPE;*.JPEG"))
-		ddflip2gdi(); if (v = (char *)loadfileselect("Select texture to project...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0","PNG"))
+		ddflip2gdi(); if ((v = ((char *)loadfileselect("Select texture to project...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0","PNG"))))
 		{
 			strcpy(tfilenam,(char *)v);
 			if (vx5.pic) { free(vx5.pic); vx5.pic = 0; }
@@ -3889,15 +3890,15 @@ void doframe ()
 
 			wsprintf(snotbuf,"Save .VXL before loading new file?");
 			if (MessageBox(ghwnd,snotbuf,"VOXED",MB_YESNO) == IDYES)
-				if (v = (char *)savefileselect("SAVE VXL file AS...","*.VXL\0*.vxl\0All files (*.*)\0*.*\0\0","VXL"))
+				if ((v = ((char *)savefileselect("SAVE VXL file AS...","*.VXL\0*.vxl\0All files (*.*)\0*.*\0\0","VXL"))))
 					savevxl(v,&ipos,&istr,&ihei,&ifor);
 
 			wsprintf(snotbuf,"Save .SXL before loading new file?");
 			if (MessageBox(ghwnd,snotbuf,"VOXED",MB_YESNO) == IDYES)
-				if (v = (char *)savefileselect("SAVE SXL file AS...","*.SXL\0*.sxl\0All files (*.*)\0*.*\0\0","SXL"))
+				if ((v = ((char *)savefileselect("SAVE SXL file AS...","*.SXL\0*.sxl\0All files (*.*)\0*.*\0\0","SXL"))))
 					savesxl(v);
 
-			if (v = (char *)loadfileselect("LOAD SXL/VXL file...","SXL, VXL\0*.sxl;*.vxl\0All files (*.*)\0*.*\0\0","SXL"))
+			if ((v = ((char *)loadfileselect("LOAD SXL/VXL file...","SXL, VXL\0*.sxl;*.vxl\0All files (*.*)\0*.*\0\0","SXL"))))
 			{
 				i = strlen(v);
 				if ((i >= 3) && (!strcasecmp(&v[i-4],".sxl")))
@@ -3936,7 +3937,7 @@ void doframe ()
 #else
 			keystatus[0x38] = keystatus[0xb8] = 0;
 			ddflip2gdi(); strcpy(fileselectnam,vxlfilnam);
-			if (v = (char *)savefileselect("SAVE VXL file AS...","*.VXL\0*.vxl\0All files (*.*)\0*.*\0\0","VXL"))
+			if ((v = ((char *)savefileselect("SAVE VXL file AS...","*.VXL\0*.vxl\0All files (*.*)\0*.*\0\0","VXL"))))
 			{
 				strcpy(vxlfilnam,v);
 				savevxl(vxlfilnam,&ipos,&istr,&ihei,&ifor);
@@ -3947,7 +3948,7 @@ void doframe ()
 		else
 		{
 			ddflip2gdi(); strcpy(fileselectnam,sxlfilnam);
-			if (v = (char *)savefileselect("SAVE SXL file AS...","*.SXL\0*.sxl\0All files (*.*)\0*.*\0\0","SXL"))
+			if ((v = ((char *)savefileselect("SAVE SXL file AS...","*.SXL\0*.sxl\0All files (*.*)\0*.*\0\0","SXL"))))
 			{
 				strcpy(sxlfilnam,v);
 				savesxl(sxlfilnam);
@@ -3959,7 +3960,7 @@ void doframe ()
 	{
 		keystatus[0x3f] = 0;
 		//if (v = (char *)fileselect("*.PNG;*.JPG;*.JPE;*.JPEG"))
-		ddflip2gdi(); if (v = (char *)loadfileselect("Select sky...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0",0))
+		ddflip2gdi(); if ((v = ((char *)loadfileselect("Select sky...","PNG, JPEG\0*.png;*.jpe;*.jpg;*.jpeg\0All files (*.*)\0*.*\0\0",0))))
 			{ if (!loadsky(v)) strcpy(skyfilnam,v); }
 	}
 
@@ -4293,7 +4294,7 @@ dragfloatcurs:;
 		if (!iscursgood(1.0)) curs[editcurs] = tp;
 	}
 
-	if (j = keystatus[0x1c] + ((bstatus&1)<<1))
+	if ((j = (keystatus[0x1c] + ((bstatus&1)<<1))))
 	{
 		keystatus[0x1c] = 0;
 		if (!colselectmode) //L.Enter/L.Mouse
@@ -4536,7 +4537,7 @@ long initapp (long argc, char **argv)
 		if (kzopen("voxedhlp.txt"))
 		{
 			helpleng = kzfilelength();
-			if (helpbuf = (char *)malloc(helpleng))
+			if ((helpbuf = ((char *)malloc(helpleng))))
 				{ kzread(helpbuf,helpleng); helpmode = 2; }
 			kzclose();
 		}
