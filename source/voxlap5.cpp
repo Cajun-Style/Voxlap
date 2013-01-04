@@ -120,8 +120,8 @@ typedef struct { castdat *i0, *i1; long z0, z1, cx0, cy0, cx1, cy1; } cftype;
 #endif
 	//Screen related variables:
 static long xres_voxlap, yres_voxlap, xres4_voxlap;
-uintptr_t frameplace;
-ptrdiff_t bytesperline;
+uintptr_t frameplace;//Set in voxsetframebuffer; denotes address of framebuffer
+ptrdiff_t bytesperline;//? Set in voxsetframebuffer; not sure
 long ylookup[MAXYDIM+1];
 
 static lpoint3d glipos;
@@ -10054,6 +10054,7 @@ void finishfalls ()
 
 /**
  * Since voxlap is currently a software renderer and I don't have any system
+<<<<<<< HEAD
  * dependent code in it, you must provide it with the frame buffer. You
  * MUST call this once per frame, AFTER startdirectdraw(), but BEFORE any
  * functions that access the frame buffer.
@@ -10061,6 +10062,12 @@ void finishfalls ()
  * @param b pitch (bytes per line)
  * @param x frame width
  * @param y frame height
+=======
+ * dependent code in it, you must provide it with the frame buffer. You MUST
+ * call this once per frame, AFTER startdirectdraw(), but BEFORE any functions
+ * that access the frame buffer.
+ * p= address of framebuffer (frameplace), b= pitch; size in bytes of pixel, x= width of framebuffer in pixels, y=height of framebuffer in pixels
+>>>>>>> Continued doing some minor type clean-up
  */
 void voxsetframebuffer (long p, long b, long x, long y)
 {

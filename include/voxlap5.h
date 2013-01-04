@@ -15,6 +15,7 @@
 #error "Cannot link C frontend to C++ Backend"
 #endif
 
+#include "porthacks.h"
 
 #if defined(VOXLAP_C) && defined(__cplusplus)
 	extern "C" {
@@ -226,7 +227,7 @@ extern long project2d (float, float, float, float *, float *, float *);
 extern void drawspherefill (float, float, float, float, long);
 extern void drawpicinquad (long, long, long, long, long, long, long, long, float, float, float, float, float, float, float, float);
 extern void drawpolyquad (long, long, long, long, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float);
-extern void print4x6 (long, long, long, long, const char *, ...);
+extern void print4x6 (ptrdiff_t, ptrdiff_t, int32_t, int32_t, const char *fmt, ...);
 extern void print6x8 (long, long, long, long, const char *, ...);
 extern void drawtile (long, long, long, long, long, long, long, long, long, long, long, long);
 extern long screencapture32bit (const char *);

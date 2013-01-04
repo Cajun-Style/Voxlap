@@ -161,12 +161,6 @@ void doframe ()
 	 */
 	startdirectdraw(&frameptr,&pitch,&xdim,&ydim);
 	
-	/**
-	 * Since voxlap is currently a software renderer and I don't have any system
-	 * dependent code in it, you must provide it with the frame buffer. You MUST
-	 * call this once per frame, AFTER startdirectdraw(), but BEFORE any functions
-	 * that access the frame buffer.
-	 */
 	voxsetframebuffer(frameptr,pitch,xdim,ydim);
 	
 	/**
