@@ -59,7 +59,7 @@
  * Standard Library Hacks
  **/
 
-#if defined(__GNUC__) && !(defined(__MINGW32__) || defined(__MINGW64__))
+#if defined(__GNUC__) && (defined(__MINGW32__) || defined(__MINGW64__))
 #include <ctype.h>
 #include <limits.h>
 #include <stddef.h>
@@ -83,7 +83,7 @@ static int memcasecmp (const void * const ptr0, const void * const ptr1, size_t 
 
 #endif
 
-#if (defined(_WIN32) || defined(_WINDOWS_)) || (defined(__MINGW32__) || defined(__MINGW64__))
+#if (defined(_WIN32) || defined(_WINDOWS_)) && !(defined(__MINGW32__) || defined(__MINGW64__))
 
 #define strcasecmp _stricmp
 #define memcasecmp _memicmp
