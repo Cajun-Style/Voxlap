@@ -303,7 +303,6 @@ static const uint32_t font4x6[] = //256 DOS chars, from Ken's Build SMALLFNT
 	0xeae000,0x0cc000,0x00c000,0x644c40,0xcaa000,0xc4e000,0x0eee00,0x000000,
 };
 
-<<<<<<< HEAD
 /**
  * Draws 4x6 font on screen (very fast!)
  * @param x x of top-left corner
@@ -312,10 +311,7 @@ static const uint32_t font4x6[] = //256 DOS chars, from Ken's Build SMALLFNT
  * @param bcol background color (32-bit RGB format) or -1 for transparent
  * @param fmt string - same syntax as printf
  */
-void print4x6 (long x, long y, long fcol, long bcol, const char *fmt, ...)
-=======
 void print4x6 (ptrdiff_t x, ptrdiff_t y, int32_t fcol, int32_t bcol, const char *fmt, ...)
->>>>>>> Made a very modest start in type correctness
 {
 	va_list arglist;
 	char st[280], *c;//! 280 not enforced anywhere
@@ -6552,10 +6548,9 @@ long project2d (float x, float y, float z, float *px, float *py, float *sx)
 	return(1);
 }
 
-<<<<<<< HEAD
-static int64_t mskp255 = 0x00ff00ff00ff00ff;
-static int64_t mskn255 = 0xff01ff01ff01ff01;
-static int64_t rgbmask64 = 0xffffff00ffffff;
+static int64_t mskp255 = 0x00ff00ff00ff00ffll;
+static int64_t mskn255 = 0xff01ff01ff01ff01ll;
+static int64_t rgbmask64 = 0xffffff00ffffffll;
 /**
  * Draws a 32-bit color texture from memory to the screen. This is the
  * low-level function used to draw text loaded from a PNG,JPG,TGA,GIF.
@@ -6577,16 +6572,6 @@ static int64_t rgbmask64 = 0xffffff00ffffff;
  * @param white shade scale (ARGB format). For no effects, use (0,-1)
  *              NOTE: if alphas of black&white are same, then alpha channel ignored
  */
-=======
-static int64_t mskp255 = 0x00ff00ff00ff00ffll;
-static int64_t mskn255 = 0xff01ff01ff01ff01ll;
-static int64_t rgbmask64 = 0xffffff00ffffffll;
-
-	//(tf,tp,tx,ty,tcx,tcy): Tile source, (tcx&tcy) is texel (<<16) at (sx,sy)
-	//(sx,sy,xz,yz) screen coordinates and x&y zoom, all (<<16)
-	//(black,white): black & white shade scale (ARGB format)
-	//   Note: if alphas of black&white are same, then alpha channel ignored
->>>>>>> Made a very modest start in type correctness
 void drawtile (long tf, long tp, long tx, long ty, long tcx, long tcy,
 					long sx, long sy, long xz, long yz, long black, long white)
 {
@@ -10054,7 +10039,6 @@ void finishfalls ()
 
 /**
  * Since voxlap is currently a software renderer and I don't have any system
-<<<<<<< HEAD
  * dependent code in it, you must provide it with the frame buffer. You
  * MUST call this once per frame, AFTER startdirectdraw(), but BEFORE any
  * functions that access the frame buffer.
@@ -10062,12 +10046,6 @@ void finishfalls ()
  * @param b pitch (bytes per line)
  * @param x frame width
  * @param y frame height
-=======
- * dependent code in it, you must provide it with the frame buffer. You MUST
- * call this once per frame, AFTER startdirectdraw(), but BEFORE any functions
- * that access the frame buffer.
- * p= address of framebuffer (frameplace), b= pitch; size in bytes of pixel, x= width of framebuffer in pixels, y=height of framebuffer in pixels
->>>>>>> Continued doing some minor type clean-up
  */
 void voxsetframebuffer (long p, long b, long x, long y)
 {
