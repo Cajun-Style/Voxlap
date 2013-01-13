@@ -7492,14 +7492,19 @@ kv6data *genmipkv6 (kv6data *kv6)
 	kv6data *nkv6;
 	kv6voxtype *v0[2], *vs[4], *ve[4], *voxptr;
 	unsigned short *xyptr, *xyi2, *sxyi2;
-	int64_t i, darand = 0;
-        long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn, *xptr;
-	long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
+	//int64_t seems to be the smallest type possible, given that it should be signed and have at least 32 bit data.
+        int64_t i, darand = 0;
+        
+        long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn;
+	intptr_t xptr;
+        long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
 	char vecbuf[8];
 
 	if ((!kv6) || (kv6->lowermip)) return(0);
 
-	xs = ((kv6->xsiz+1)>>1); ys = ((kv6->ysiz+1)>>1); zs = ((kv6->zsiz+1)>>1);
+	xs = ((kv6->xsiz+1)>>1);
+        ys = ((kv6->ysiz+1)>>1);
+        zs = ((kv6->zsiz+1)>>1);
 	if ((xs < 2) || (ys < 2) || (zs < 2)) return(0);
 	xysiz = ((((xs*ys)<<1)+3)&~3);
 	i = sizeof(kv6data) + (xs<<2) + xysiz + kv6->numvoxs*sizeof(kv6voxtype);
@@ -7516,8 +7521,8 @@ kv6data *genmipkv6 (kv6data *kv6)
 	nkv6->namoff = 0;
 	nkv6->lowermip = 0;
 
-	xptr = (long *)(((long)nkv6) + sizeof(kv6data));
-	xyptr = (unsigned short *)(((long)xptr) + (xs<<2));
+	xptr = (intptr_t)(nkv6 + 1); //One past nkv6
+	xyptr = (unsigned short *)(xptr + (xs<<2)); //4 * xsize/2 bytes past xptr
 	voxptr = (kv6voxtype *)(((long)xyptr) + xysiz);
 	n = 0;
 
@@ -7585,7 +7590,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 			xyptr[0] = n-oxyn; xyptr++;
 			vs[0] = ve[1]; vs[2] = ve[3];
 		}
-		xptr[x] = n-oxn;
+		((long*)xptr)[x] = n-oxn;
 		if ((x<<1)+1 >= kv6->xsiz) break; //Avoid read page fault
 		v0[0] = v0[1]+kv6->xlen[(x<<1)+1];
 	}
