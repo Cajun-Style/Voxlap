@@ -417,7 +417,7 @@ static const uint64_t font6x8[] = //256 DOS chars, from: DOSAPP.FON (tab blank)
  */
 void print6x8 (long x, long y, long fcol, long bcol, const char *fmt, ...)
 {
-        va_list arglist;
+	va_list arglist;
 	char st[280], *c, *v;
 	long i, j;
 
