@@ -7470,7 +7470,7 @@ void equivecinit (long n)
 
 //EQUIVEC code ends -------------------------------------------------------
 
-static uintptr_t umulmip[9] = {0,4294967295,2147483648,1431655765,1073741824,
+static uintptr_t umulmip[9] = {0,4294967295u,2147483648,1431655765,1073741824,
 								  858993459,715827882,613566756,536870912};
 /**
  * Generate 1 more mip-level for a .KV6 sprite. This function generates a
@@ -7492,8 +7492,9 @@ kv6data *genmipkv6 (kv6data *kv6)
 	kv6data *nkv6;
 	kv6voxtype *v0[2], *vs[4], *ve[4], *voxptr;
 	unsigned short *xyptr, *xyi2, *sxyi2;
-	long i, j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn, *xptr;
-	long xx, yy, zz, r, g, b, vis, npix, sxyi2i, darand = 0;
+	int64_t i, darand = 0;
+        long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn, *xptr;
+	long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
 	char vecbuf[8];
 
 	if ((!kv6) || (kv6->lowermip)) return(0);
@@ -7534,7 +7535,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 		oxn = n;
 		for(y=0;y<ys;y++)
 		{
-			oxyn = n;
+			oxyn = Z;
 
 			ve[0] = vs[1] = vs[0]+xyi2[0];
 			if ((x<<1)+1 < kv6->xsiz) { ve[2] = vs[3] = vs[2]+xyi2[kv6->ysiz]; }
