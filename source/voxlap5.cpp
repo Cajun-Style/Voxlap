@@ -7522,7 +7522,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 	nkv6->lowermip = 0;
 
 	xptr = (intptr_t)(nkv6 + 1); //One past nkv6
-	xyptr = (unsigned short *)(xptr + (xs<<2)); //4 * xsize/2 bytes past xptr
+	xyptr = (unsigned short *)(xptr + (xs<<2)); //4 * ((xsize+1)/2) bytes past xptr
 	voxptr = (kv6voxtype *)(((long)xyptr) + xysiz);
 	n = 0;
 
@@ -7635,9 +7635,9 @@ static kv6data *loadkv6 (const char *filnam)
 {
 	FILE *fil;
 	kv6data tk, *newkv6;
-	long i;
+	size_t data_block_size;
 
-	if (!kzopen(filnam))
+	if (!kzopen(filnam))//Initializes kz-file functions
 	{
 			//File not found, but allocate a structure anyway
 			//   so it can keep track of the filename
@@ -7656,12 +7656,12 @@ static kv6data *loadkv6 (const char *filnam)
 
 	kzread((void *)&tk,32);
 
-	i = tk.numvoxs*sizeof(kv6voxtype) + tk.xsiz*4 + tk.xsiz*tk.ysiz*2;
-	newkv6 = (kv6data *)malloc(i+sizeof(kv6data));
+	data_block_size = tk.numvoxs*sizeof(kv6voxtype) + tk.xsiz*4 + tk.xsiz*tk.ysiz*2;
+	newkv6 = (kv6data *)malloc(data_block_size+sizeof(kv6data));
 	if (!newkv6) { kzclose(); return(0); }
 	if (((long)newkv6)&3) evilquit("getkv6 malloc not 32-bit aligned!");
 
-	newkv6->leng = i+sizeof(kv6data);
+	newkv6->leng = data_block_size+sizeof(kv6data);
 	memcpy(&newkv6->xsiz,&tk.xsiz,28);
 	newkv6->namoff = 0;
 	newkv6->lowermip = 0;
@@ -7669,7 +7669,7 @@ static kv6data *loadkv6 (const char *filnam)
 	newkv6->xlen = (unsigned long *)(((long)newkv6->vox)+tk.numvoxs*sizeof(kv6voxtype));
 	newkv6->ylen = (unsigned short *)(((long)newkv6->xlen) + tk.xsiz*4);
 
-	kzread((void *)newkv6->vox,i);
+	kzread((void *)newkv6->vox,data_block_size);
 	kzclose();
 	return(newkv6);
 }

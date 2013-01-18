@@ -38,12 +38,12 @@ nasm_FLAGS        =-o $(@)           # Netwide Assembler (nasm)
 jwasm_FLAGS       =-Fo $(@) -c -8    # Micrsoft Macro Assembler (masm)
 AFLAGS            =$($(AS)_FLAGS) $($(PLATdep)_$(AS)_FLAGS)
 
-CFLAGS            =-o $(@) -funsigned-char -m32 -mfpmath=sse -msse -m3dnow -ffast-math $(CC_$(build)) $($(GFX)_CFLAGS) $(Random_Macros) -I $(locINC)
-CC_Debug          =-ggdb -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
+CFLAGS            =-o $(@) -funsigned-char -m32 -mfpmath=sse -msse -ffast-math $(CC_$(build)) $($(GFX)_CFLAGS) $(Random_Macros) -I $(locINC)
+CC_Debug          =-ggdb -Wall -Wextra
 CC_Release        =-O3
 
 LDFLAGS           =-o $(@) -m32 $($(LNK)_FLAGS) $(LD_$(build))
-LD_Debug          =-ggdb -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-unused-but-set-variable
+LD_Debug          =-ggdb -Wall -Wextra
 LD_Release        =-O3
 LDLIBS            =$($(GFX)_LDLIBS)
 

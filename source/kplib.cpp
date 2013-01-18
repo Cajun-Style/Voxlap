@@ -148,11 +148,11 @@ typedef struct
 {
 	FILE *fil;   //0:no file open, !=0:open file (either stand-alone or zip)
 	int comptyp; //0:raw data (can be ZIP or stand-alone), 8:PKZIP LZ77 *flate
-	int seek0;   //0:stand-alone file, !=0: start of zip compressed stream data
+	uintptr_t seek0;   //0:stand-alone file, !=0: start of zip compressed stream data
 	int compleng;//Global variable for compression FIFO
 	int comptell;//Global variable for compression FIFO
-	int leng;    //Uncompressed file size (bytes)
-	int pos;     //Current uncompressed relative file position (0<=pos<=leng)
+	ptrdiff_t leng;    //Uncompressed file size (bytes) (is sometimes assigned -1 via filelength)
+	uintptr_t pos;     //Current uncompressed relative file position (0<=pos<=leng)
 	int endpos;  //Temp global variable for kzread
 	int jmpplc;  //Store place where decompression paused
 	int i;       //For stand-alone/ZIP comptyp#0, this is like "uncomptell"

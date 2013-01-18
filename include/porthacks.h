@@ -104,6 +104,7 @@ typedef unsigned __int64 uint64_t;
 //typedef uintptr_t UINT_PTR;
 #else
 #include <stdint.h>
+#include <malloc.h>
 #endif
 
 
