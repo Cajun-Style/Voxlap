@@ -1408,11 +1408,7 @@ static signed char bitnum[32] =
 	0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,
 	1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5
 };
-//static long bitsum[32] =
-//{
-//   0,-2,-1,-3, 0,-2,-1,-3, 1,-1, 0,-2, 1,-1, 0,-2,
-//   2, 0, 1,-1, 2, 0, 1,-1, 3, 1, 2, 0, 3, 1, 2, 0
-//};
+
 static long bitsnum[32] =
 {
 	0        ,1-(2<<16),1-(1<<16),2-(3<<16),
@@ -1430,7 +1426,11 @@ static float fsqrecip[5860]; //75*75 + 15*15 + 3*3 = 5859 is max value (5*5*5 bo
 void estnorm (long x, long y, long z, point3d *fp)
 {
 	lpoint3d n;
-	long *lptr, xx, yy, zz, b[5], i, j, k;
+	long xx, yy, zz, b[5], i, j, k;
+	union {
+	    long *lptr; //Original; but has 2 distinct uses.
+	    int64_t *i64ptr;
+	};//! Depends on endianess
 	float f;
 
 	n.x = 0; n.y = 0; n.z = 0;
@@ -1440,65 +1440,62 @@ void estnorm (long x, long y, long z, point3d *fp)
 	{
 			//x,y not close enough to cache: calls expandbitstack 25 times :(
 		xbsox = x; xbsoy = y; xbsof = 24*5;
-		lptr = (long *)(&xbsbuf[24*5+1]);
+		i64ptr = (xbsbuf + 24 * 5 + 1);
 		for(yy=-2;yy<=2;yy++)
-			for(xx=-2;xx<=2;xx++,lptr-=10)
-				expandbitstack(x+xx,y+yy,(int64_t *)lptr);
+			for(xx=-2;xx<=2;xx++,i64ptr-=5)
+				expandbitstack(x+xx,y+yy,i64ptr);
 	}
 	else if (x != xbsox)
 	{
 			//shift xbsbuf cache left/right: calls expandbitstack 5 times :)
-		if (x < xbsox) { xx = -2; xbsof -= 24*5; lptr = (long *)(&xbsbuf[xbsof+1]); }
-					 else { xx = 2; lptr = (long *)(&xbsbuf[xbsof-5*5+1]); xbsof -= 1*5; }
+		if (x < xbsox) { xx = -2; xbsof -= 24*5; i64ptr = (xbsbuf + xbsof + 1); }
+					 else { xx = 2; i64ptr = (xbsbuf + xbsof - 5 * 5 + 1); xbsof -= 1*5; }
 		xbsox = x; if (xbsof < 0) xbsof += 25*5;
 		for(yy=-2;yy<=2;yy++)
 		{
-			if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			expandbitstack(x+xx,y+yy,(int64_t *)lptr);
-			lptr -= 5*10;
+			if (i64ptr < (xbsbuf + 1)) i64ptr += 25*5;
+			expandbitstack(x+xx,y+yy,i64ptr);
+			i64ptr -= 5*5;
 		}
 	}
 	else if (y != xbsoy)
 	{
 			//shift xbsbuf cache up/down: calls expandbitstack 5 times :)
-		if (y < xbsoy) { yy = -2; xbsof -= 20*5; lptr = (long *)(&xbsbuf[xbsof+1]); }
-					 else { yy = 2; lptr = (long *)(&xbsbuf[xbsof+1]); xbsof -= 5*5; }
+		if (y < xbsoy) { yy = -2; xbsof -= 20*5; i64ptr = (xbsbuf + xbsof + 1); }
+					 else { yy = 2; i64ptr = (xbsbuf + xbsof + 1); xbsof -= 5*5; }
 		xbsoy = y; if (xbsof < 0) xbsof += 25*5;
 		for(xx=-2;xx<=2;xx++)
 		{
-			if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			expandbitstack(x+xx,y+yy,(int64_t *)lptr);
-			lptr -= 1*10;
+			if (i64ptr < (xbsbuf + 1)) i64ptr += 25*5;
+			expandbitstack(x+xx,y+yy,i64ptr);
+			i64ptr -= 1*5;
 		}
 	}
 
 	z -= 2;
 	if ((z&31) <= 27) //2 <= (z&31) <= 29
-		{ lptr = (long *)((long)(&xbsbuf[xbsof+1]) + ((z&~31)>>3)); z &= 31; }
+		{ i64ptr = (int64_t *)((uintptr_t)(xbsbuf + xbsof + 1) + ((z&~31)>>3)); z &= 31; }
 	else
-		{ lptr = (long *)((long)(&xbsbuf[xbsof+1]) + (z>>3)); z &= 7; }
+		{ i64ptr = (int64_t *)((uintptr_t)(xbsbuf + xbsof + 1) + (z>>3)); z &= 7; }
 
 	for(yy=-2;yy<=2;yy++)
 	{
-		if (lptr >= (long *)&xbsbuf[1+10*5])
+		if (lptr >= (long *)(xbsbuf + 1 + 10 * 5))
 		{
-			b[0] = ((lptr[  0]>>z)&31); b[1] = ((lptr[-10]>>z)&31);
+                        b[0] = ((lptr[  0]>>z)&31); b[1] = ((lptr[-10]>>z)&31);
 			b[2] = ((lptr[-20]>>z)&31); b[3] = ((lptr[-30]>>z)&31);
 			b[4] = ((lptr[-40]>>z)&31); lptr -= 50;
 		}
 		else
 		{
-			b[0] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			b[1] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			b[2] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			b[3] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
-			b[4] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)&xbsbuf[1]) lptr += 25*10;
+			b[0] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)(xbsbuf +1)) lptr += 25*10;
+			b[1] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)(xbsbuf +1)) lptr += 25*10;
+			b[2] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)(xbsbuf +1)) lptr += 25*10;
+			b[3] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)(xbsbuf +1)) lptr += 25*10;
+			b[4] = ((lptr[0]>>z)&31); lptr -= 10; if (lptr < (long *)(xbsbuf +1)) lptr += 25*10;
 		}
 
 			//Make filter spherical
-		//if (yy&1) { b[0] &= 0xe; b[4] &= 0xe; }
-		//else if (yy) { b[0] &= 0x4; b[1] &= 0xe; b[3] &= 0xe; b[4] &= 0x4; }
-
 		n.x += ((bitnum[b[4]]-bitnum[b[0]])<<1)+bitnum[b[3]]-bitnum[b[1]];
 		j = bitsnum[b[0]]+bitsnum[b[1]]+bitsnum[b[2]]+bitsnum[b[3]]+bitsnum[b[4]];
 		n.z += j; n.y += (*(signed short *)&j)*yy;
@@ -7492,23 +7489,26 @@ kv6data *genmipkv6 (kv6data *kv6)
 	kv6data *nkv6;
 	kv6voxtype *v0[2], *vs[4], *ve[4], *voxptr;
 	unsigned short *xyptr, *xyi2, *sxyi2;
-	//int64_t seems to be the smallest type possible, given that it should be signed and have at least 32 bit data.
-        int64_t i, darand = 0;
-        
-        long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn;
+	uint32_t mult, darand = 0; //Type must hold *umulmip
+	int i; //Only used as counter. Fastest type implied.
+
+	long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn;
 	intptr_t xptr;
-        long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
+	long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
 	char vecbuf[8];
 
 	if ((!kv6) || (kv6->lowermip)) return(0);
 
 	xs = ((kv6->xsiz+1)>>1);
-        ys = ((kv6->ysiz+1)>>1);
-        zs = ((kv6->zsiz+1)>>1);
+	ys = ((kv6->ysiz+1)>>1);
+	zs = ((kv6->zsiz+1)>>1);
 	if ((xs < 2) || (ys < 2) || (zs < 2)) return(0);
-	xysiz = ((((xs*ys)<<1)+3)&~3);
-	i = sizeof(kv6data) + (xs<<2) + xysiz + kv6->numvoxs*sizeof(kv6voxtype);
-	nkv6 = (kv6data *)malloc(i);
+	xysiz = ((
+		((xs*ys)<<1) + 3
+	)&~3);
+	nkv6 = (kv6data *) malloc(
+		sizeof(kv6data) + (xs<<2) + xysiz + kv6->numvoxs*sizeof(kv6voxtype)
+	);
 	if (!nkv6) return(0);
 
 	kv6->lowermip = nkv6;
@@ -7540,7 +7540,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 		oxn = n;
 		for(y=0;y<ys;y++)
 		{
-			oxyn = Z;
+			oxyn = n;
 
 			ve[0] = vs[1] = vs[0]+xyi2[0];
 			if ((x<<1)+1 < kv6->xsiz) { ve[2] = vs[3] = vs[2]+xyi2[kv6->ysiz]; }
@@ -7577,13 +7577,14 @@ kv6data *genmipkv6 (kv6data *kv6)
 				{
 					if (n >= kv6->numvoxs) return(0); //Don't let it crash!
 
-					i = umulmip[npix]; j = (npix>>1);
-					voxptr[n].col = (umulshr32(r+(j<<16),i)&0xff0000) +
-										 (umulshr32(g+(j<< 8),i)&  0xff00) +
-										 (umulshr32((r&0xfff)+ j     ,i));
+					mult = umulmip[npix]; j = (npix>>1);
+					voxptr[n].col = (umulshr32(r+(j<<16),mult)&0xff0000) +
+										 (umulshr32(g+(j<< 8),mult)&  0xff00) +
+										 (umulshr32((r&0xfff)+ j ,mult));
 					voxptr[n].z = (z>>1);
 					voxptr[n].vis = vis;
-					voxptr[n].dir = vecbuf[umulshr32(darand,npix)]; darand += i;
+					voxptr[n].dir = vecbuf[umulshr32(darand,npix)];
+					darand += mult;
 					n++;
 				}
 			}

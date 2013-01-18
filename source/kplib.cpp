@@ -61,6 +61,7 @@ static unsigned short SSWAPIL (unsigned short a) { return((a>>8)+(a<<8)); }
 
 #ifdef __GNUC__
 #include <stdint.h>
+#include <malloc.h> //For ptrdiff_t on older gcc?
 #define INT_PTR intptr_t
 #define UINT_PTR uintptr_t
 #endif

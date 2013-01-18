@@ -89,9 +89,9 @@ static inline long isshldiv16safe (long a, long b)
 	return ((uint32_t)((-abs(b) - ((-abs(a)) >> 14)))) >> 31;
 }
 
-static inline long umulshr32 (long a, long d)
+static inline long umulshr32 (int64_t a, int64_t d)
 {
-	return (long)(((uint64_t)a * (uint64_t)d) >> 32);
+	return (long)((a * d) >> 32);
 }
 
 static inline long scale (long a, long d, long c)
