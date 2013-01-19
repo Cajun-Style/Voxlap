@@ -59,11 +59,13 @@
  * Standard Library Hacks
  **/
 
-#if defined(__GNUC__) && !(defined(__MINGW32__) || defined(__MINGW64__))
+#if defined(__GNUC__)
 #include <ctype.h>
 #include <limits.h>
 #include <stddef.h>
+#include <stdint.h>
 
+#if !(defined(__MINGW32__) || defined(__MINGW64__))
 /* Originally by Jim Meyering.  */
 /* GPL 2 or later  */
 static int memcasecmp (const void * const ptr0, const void * const ptr1, size_t n)
@@ -80,36 +82,29 @@ static int memcasecmp (const void * const ptr0, const void * const ptr1, size_t 
 	}
 	return 0;
 }
-#endif
+#endif /* !MinGW */
+#endif /* GCC */
 
-#if (defined(_WIN32) || defined(_WINDOWS_)) || (defined(__MINGW32__) || defined(__MINGW64__))
+#if (defined(_WIN32) || defined(_WINDOWS_))/* Windows*/
 
 #define strcasecmp _stricmp
 #define memcasecmp _memicmp
 
-#endif
+#endif /*Windows*/
 
-/**
- * Visual Studio Type Hacks
- **/
+#if defined(_MSC_VER) && _MSC_VER<1600 /*Visual Studio prior to 2010*/
 
-
-#if defined(_MSC_VER) && _MSC_VER<1600 //if Visual studio before 2010
-#include<BaseTsd.h>
 typedef          __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef          __int64 int64_t;
 typedef unsigned __int64 uint64_t;
 typedef signed   __int64 ptrdiff_t;
-typedef         UINT_PTR uintptr_t;
-
-#else
-#include <stdint.h>
-#endif
+typedef unsigned int     uintptr_t;
+#endif /*Visual Studio prior to 2010*/
 
 
 /**
- * Usefully macros
+ * Usefull macros
  **/
 #if __cplusplus
 	#define EXTERN_C extern "C"
