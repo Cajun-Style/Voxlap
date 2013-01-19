@@ -1902,7 +1902,7 @@ long initdirectdraw (long daxres, long dayres, long dacolbits)
 									if (!IDirectDrawSurface_GetPixelFormat(ddsurf[0],&ddpf)) //colbits = ddpf.dwRGBBitCount;
 									{
 										grabmodeinfo(daxres,dayres,&ddpf,&curvidmodeinfo);
-	
+
 											//If mode is 555 color (and not 565), use 15-bit emulation code...
 										if ((colbits != 16) && (ncolbits == 16)
 																	&& (curvidmodeinfo.r0 == 10) && (curvidmodeinfo.rn == 5)
@@ -3380,7 +3380,7 @@ static void kensoundbreath (long minleng)
 			if (rendersnd[j].flags&KSND_3D)
 			{
 				float f, g, h;
-				
+
 				n = (signed long)(leng>>gshiftval);
 
 				f = (rendersnd[j].p.x-audiopos.x)*(rendersnd[j].p.x-audiopos.x)+(rendersnd[j].p.y-audiopos.y)*(rendersnd[j].p.y-audiopos.y)+(rendersnd[j].p.z-audiopos.z)*(rendersnd[j].p.z-audiopos.z);
@@ -3647,7 +3647,7 @@ void playsound (const char *filnam, long volperc, float frqmul, void *pos, long 
 	long i, j, k, m, ispos, ispos0, ispos1, isinc, ivolsc, ivolsc0, ivolsc1, newsnd, *lptr[2], numsamps;
 	short *coefilt;
 	float f, g, h;
-	
+
 	if (!dsound) return;
 	ENTERMUTX;
 	if (!streambuf) { LEAVEMUTX; return; }
@@ -3868,7 +3868,7 @@ void initdirectsound ()
 			//(dsound)->Release(lpds);
 			if (dsrval != S_OK) { dsound = NULL; return; }
 		}
-	}   
+	}
 #else
 	if (DirectSoundCreate(0,&dsound,0) != DS_OK) { MessageBox(ghwnd,"DirectSoundCreate","ERROR",MB_OK); exit(0); }
 #endif

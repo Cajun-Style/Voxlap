@@ -4056,10 +4056,10 @@ void doframe ()
 		if (!vx5.lightmode)
 		{
 			voxdontrestore();
-	
+
 			if (keystatus[0x38]|keystatus[0xb8]) flashbrival = (0xff<<24);
 													  else flashbrival = (0x10<<24);
-	
+
 				//Darken all colors
 			x = VSID; y = VSID; i = 0;
 			for(j=0;j<gmipnum;j++) { i += x*y; x >>= 1; y >>= 1; }

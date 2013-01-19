@@ -238,7 +238,7 @@ long getvalidmodelist (validmodetype **davalidmodelist)
 	int cd[5] = { 8,15,16,24,32 }, i, j;
 	SDL_Rect **modes;
 	SDL_PixelFormat pf = { NULL, 8, 1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0 };
-	
+
 	if (!validmodecnt) {
 		for (i=0;i<5;i++) {
 			pf.BitsPerPixel = cd[i];
@@ -269,7 +269,7 @@ void updatepalette (long start, long danum)
 {
 	SDL_Color pe[256];
 	int i,j;
-	
+
 	if (!sdlsurf) return;
 
 	for (i=0,j=danum; j>0; i++,j--) {
@@ -293,7 +293,7 @@ long startdirectdraw(long *vidplc, long *dabpl, long *daxres, long *dayres)
 	if (surflocked) stopdirectdraw();
 
 	if (SDL_LockSurface(sdlsurf) < 0) return 0;
-	
+
 	*vidplc = (long)sdlsurf->pixels; *dabpl = sdlsurf->pitch;
 	*daxres = sdlsurf->w; *dayres = sdlsurf->h; surflocked = 1;
 	return 1;
@@ -322,7 +322,7 @@ long initdirectdraw(long daxres, long dayres, long dacolbits)
 		SDL_ShowCursor(SDL_ENABLE);
 	}
 #endif
-	
+
 	xres = daxres; yres = dayres; colbits = dacolbits;
 
 	surfbits = BASICSURFBITS;
@@ -354,7 +354,7 @@ long initdirectdraw(long daxres, long dayres, long dacolbits)
 	curvidmodeinfo.bn = 8 - sdlsurf->format->Bloss;
 	curvidmodeinfo.a0 = sdlsurf->format->Ashift;
 	curvidmodeinfo.an = 8 - sdlsurf->format->Aloss;
-	
+
 	if (colbits == 8) updatepalette(0,256);
 
 #ifndef NOINPUT
@@ -399,7 +399,7 @@ void readkeyboard ()
 void readmouse (float *fmousx, float *fmousy, long *bstatus)
 {
 	if (!mouse_acquire) { *fmousx = *fmousy = 0; *bstatus = 0; return; }
-	
+
 	*fmousx = (float)mousex;
 	*fmousy = (float)mousey;
 	*bstatus = gbstatus;
@@ -470,7 +470,7 @@ int KSoundBuffer_Lock(KSoundBuffer *ksb, long wroffs, long wrlen,
 		void **ptr1, unsigned long *len1, void **ptr2, unsigned long *len2, long flags)
 {
 	if (!ksb || !ptr1 || !len1 || !ptr2 || !len2) return KS_NOTOK;
-	
+
 	if (flags & KSBLOCK_FROMWRITECURSOR) {
 		wroffs = ksb->writecur;
 	} else {
@@ -501,7 +501,7 @@ int KSoundBuffer_Lock(KSoundBuffer *ksb, long wroffs, long wrlen,
 int KSoundBuffer_GetCurrentPosition(KSoundBuffer *ksb, unsigned long *play, unsigned long *write)
 {
 	if (!ksb) return KS_NOTOK;
-	
+
 	if (play) {
 		// FIXME: Can't determine this since SDL calls us via a callback!
 		*play = ksb->writecur - 0;
@@ -510,7 +510,7 @@ int KSoundBuffer_GetCurrentPosition(KSoundBuffer *ksb, unsigned long *play, unsi
 	if (write) {
 		*write = ksb->writecur;
 	}
-	
+
 	return KS_OK;
 }
 
@@ -1445,9 +1445,9 @@ void playsoundupdate (void *optr, void *nptr)
 void sdlmixcallback(void *userdata, uint8_t *stream, int len)
 {
 	long amt;
-	
+
 	if (!streambuf) return;
-	
+
 	// copy over the normal kensound mixing buffer
 	amt = MIN(streambuf->buflen - streambuf->writecur, len);
 	memcpy(stream, &((uint8_t*)streambuf->buf)[ streambuf->writecur ], amt);
@@ -1459,7 +1459,7 @@ void sdlmixcallback(void *userdata, uint8_t *stream, int len)
 		memcpy(stream, &((uint8_t*)streambuf->buf)[ streambuf->writecur ], len);
 		streambuf->writecur += len;
 	}
-	
+
 	// mix in the umixer buffers
 }
 
@@ -1468,7 +1468,7 @@ static void kensoundclose ()
 	numrendersnd = 0;
 
 	if (streambuf) SDL_CloseAudio();
-	
+
 	if (audhashbuf)
 	{
 		long i;
@@ -1590,7 +1590,7 @@ void evilquit (const char *str) //Evil because this function makes awful assumpt
 void setacquire (long mouse, long kbd)
 {
 	SDL_GrabMode g;
-	
+
 	// SDL doesn't let the mouse and keyboard be grabbed independantly
 	if ((mouse || kbd) != mouse_acquire) {
 		g = SDL_WM_GrabInput( (mouse || kbd) ? SDL_GRAB_ON : SDL_GRAB_OFF );
@@ -1611,7 +1611,7 @@ void setmouseout (void (*in)(long,long), long x, long y)
 #endif
 
 static unsigned char keytranslation[SDLK_LAST] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0, 0, 28, 0, 0, 0, 0, 0, 89, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0, 0, 28, 0, 0, 0, 0, 0, 89, 0, 0, 0,
 	0, 0, 0, 0, 1, 0, 0, 0, 0, 57, 2, 40, 4, 5, 6, 8, 40, 10, 11, 9, 13, 51,
 	12, 52, 53, 11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 39, 39, 51, 13, 52, 53, 3, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1725,7 +1725,7 @@ static void sdlmsgloop(void)
 						case SDL_BUTTON_MIDDLE: i = 2; break;
 					}
 					if (i<0) break;
-					
+
 					if (ev.type == SDL_MOUSEBUTTONDOWN) {
 						ext_mbstatus[i] = 1|2;
 						gbstatus |= 1<<i;
@@ -1843,11 +1843,11 @@ int main(int argc, char **argv)
 {
 	uint32_t sdlinitflags;
 	int i;
-	
+
 	cputype = getcputype();
 	if ((cputype&((1<<0)+(1<<4))) != ((1<<0)+(1<<4)))
 		{ fputs("Sorry, this program requires FPU&RDTSC support (>=Pentium)", stderr); return(-1); }
-	
+
 	sdlinitflags = SDL_INIT_TIMER;
 #ifndef NOINPUT
 	for(i=0;i<256;i++) keystatus[i] = 0;
@@ -1862,7 +1862,7 @@ int main(int argc, char **argv)
 
 	if (SDL_Init(sdlinitflags) < 0) { fputs("Failure initialising SDL.",stderr); return -1; }
 	atexit(SDL_Quit);   // In case we exit() somewhere
-	
+
 	initklock();
 
 	if (initapp(argc, argv) < 0) return -1;

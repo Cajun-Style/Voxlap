@@ -125,9 +125,8 @@ typedef unsigned __int64 uint64_t;
 	} while(0)
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b)  (((a) > (b)) ? (a) : (b))
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-
-#define BOUND(value, min, max) ((value)>(max)?(max):((value)<(min)?(min):(value)))
+#define BOUND(value, min, max)  ((value)>(max)?(max):((value)<(min)?(min):(value)))
 
 #define ANTIBOUND(value, min, max) ((value)>((max)+(min)/2)?((value)>(max)?(value):(max)):((value)<(min)?(value):(min)))

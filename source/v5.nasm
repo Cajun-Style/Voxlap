@@ -905,7 +905,7 @@ bcskip6case:
 	movzx edi, byte [eax+7]
 	punpcklbw mm5, [eax]
 	pmulhuw mm5, [kv6colmul+edi*8]
-	paddw mm5, [kv6coladd] ; _MANUAL FIX_ OLD: paddw mm5, kv6coladd 
+	paddw mm5, [kv6coladd] ; _MANUAL FIX_ OLD: paddw mm5, kv6coladd
 	packuswb mm5, mm5
 	movd edi, mm0               ; edi: offs
 

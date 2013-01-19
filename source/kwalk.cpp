@@ -817,7 +817,7 @@ void doframe ()
 				}
 				setlimb(j,k,hinge[j].htype,frmval[curfrm][j]);
 			}
-	
+
 			if (j < numspr)
 			{
 				if (!(numframes&3)) spr[grabspr].flags |= 1;

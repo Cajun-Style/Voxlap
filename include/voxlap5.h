@@ -197,7 +197,7 @@ struct vx5_interface
 struct vx5_interface vx5;
 #else
 extern struct vx5_interface vx5;
-#endif 
+#endif
 
 	//Initialization functions:
 extern long initvoxlap ();

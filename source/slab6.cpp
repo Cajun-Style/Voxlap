@@ -258,7 +258,7 @@ static inline void clearbufbyte (void *d, long c, long a)
 		"rep	stosd\n"
 	".Lskipit:\n"
 		".att_syntax prefix\n"
-		: 
+		:
 		: "D" (d), "c" (c), "a" (a)
 		:
 	);
@@ -301,7 +301,7 @@ static inline void clearbufbyte (void *d, long c, long a)
 		"rep stosb\n"
 	".Lskip2:\n"
 		".att_syntax prefix\n"
-		: 
+		:
 		: "D" (d), "c" (c), "a" (a)
 		: "edx"
 	);
@@ -339,7 +339,7 @@ static inline long fstcw ()
 	__asm__ __volatile__
 	(
 		"fstcw %0\n"
-		: 
+		:
 		: "m" (fpumode)
 		:
 	);
@@ -2061,7 +2061,7 @@ void rendersphere ()
 	r2.x = -irig.z*(float)ysiz;
 	r2.y = -idow.z*(float)ysiz;
 	r2.z = -ifor.z*(float)ysiz;
-	
+
 	xv = voxdata;
 
 	r1.x = irig.x*c.x+irig.z*c.y+irig.y*c.z;
@@ -2609,7 +2609,7 @@ static inline long bsf (long a)
 	__asm__ __volatile__
 	(
 		"bsf %0, %%eax\n"
-		: 
+		:
 		: "m" (a)
 		:
 	);
@@ -2625,7 +2625,7 @@ static inline long bsr (long a)
 	__asm__ __volatile__
 	(
 		"bsr %0, %%eax\n"
-		: 
+		:
 		: "m" (a)
 		:
 	);
