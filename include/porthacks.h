@@ -8,7 +8,6 @@
  * Compiler Directive Hacks
  **/
 
-
 #if defined(_M_IX86) && !defined(__i386) //MSVC's way of declaring x86
 	#define __i386__
 #endif
@@ -31,7 +30,8 @@
 	#if GCC_VERSION >= 40500
 		#define _gtfo() __builtin_unreachable()
 	#else
-		#define _gtfo()
+		//This definition is copied from GCC's source: tsystem.h: gcc_unreachable
+		#define _gtfo() abort()
 	#endif
 #endif
 
@@ -59,7 +59,7 @@
  * Standard Library Hacks
  **/
 
-#if defined(__GNUC__) && (defined(__MINGW32__) || defined(__MINGW64__))
+#if defined(__GNUC__) && !(defined(__MINGW32__) || defined(__MINGW64__))
 #include <ctype.h>
 #include <limits.h>
 #include <stddef.h>
@@ -80,10 +80,9 @@ static int memcasecmp (const void * const ptr0, const void * const ptr1, size_t 
 	}
 	return 0;
 }
-
 #endif
 
-#if (defined(_WIN32) || defined(_WINDOWS_)) && !(defined(__MINGW32__) || defined(__MINGW64__))
+#if (defined(_WIN32) || defined(_WINDOWS_)) || (defined(__MINGW32__) || defined(__MINGW64__))
 
 #define strcasecmp _stricmp
 #define memcasecmp _memicmp
@@ -96,15 +95,16 @@ static int memcasecmp (const void * const ptr0, const void * const ptr1, size_t 
 
 
 #if defined(_MSC_VER) && _MSC_VER<1600 //if Visual studio before 2010
+#include<BaseTsd.h>
 typedef          __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef          __int64 int64_t;
 typedef unsigned __int64 uint64_t;
-//typedef ptrdiff_t signed __int64;
-//typedef uintptr_t UINT_PTR;
+typedef signed   __int64 ptrdiff_t;
+typedef         UINT_PTR uintptr_t;
+
 #else
 #include <stdint.h>
-#include <malloc.h>
 #endif
 
 
@@ -117,11 +117,11 @@ typedef unsigned __int64 uint64_t;
 	#define EXTERN_C extern
 #endif
 
-#define COSSIN(degree, cos_, sin_)	\
-	do								\
-    {								\
-		sin_ = sin(degree);			\
-		cos_ = cos(degree);			\
+define COSSIN(degree, cos_, sin_) \
+	do                         \
+	{                          \
+		sin_ = sin(degree);\
+		cos_ = cos(degree);\
 	} while(0)
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
