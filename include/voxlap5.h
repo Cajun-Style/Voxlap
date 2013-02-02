@@ -58,16 +58,17 @@ typedef union
 	//Sprite structures:
 typedef struct { long col; unsigned short z; char vis, dir; } kv6voxtype;
 
+//! Attribute packed missing?
 typedef struct kv6data
 {
 	long leng, xsiz, ysiz, zsiz;
-	float xpiv, ypiv, zpiv;
-	unsigned long numvoxs;
+	float xpiv, ypiv, zpiv;// Pivot point in voxel units
+	unsigned long numvoxs;//? xsiz * ysiz
 	long namoff;
 	struct kv6data *lowermip;
 	kv6voxtype *vox;      //numvoxs*sizeof(kv6voxtype)
-	unsigned long *xlen;  //xsiz*sizeof(long)
-	unsigned short *ylen; //xsiz*ysiz*sizeof(short)
+	unsigned long *xlen;  //xsiz*sizeof(long). ?I.e. last byte in block
+	unsigned short *ylen; //xsiz*ysiz*sizeof(short). ?I.e. last byte in block
 } kv6data;
 
 typedef struct

@@ -421,7 +421,7 @@ void print6x8 (long x, long y, long fcol, long bcol, const char *fmt, ...)
 	va_start(arglist,fmt);
 	vsprintf(st,fmt,arglist);
 	va_end(arglist);
-#if 0
+
 	y = y*bytesperline+(x<<2)+frameplace;
 	if (bcol < 0)
 	{
@@ -452,7 +452,6 @@ void print6x8 (long x, long y, long fcol, long bcol, const char *fmt, ...)
 			*(long *)(x+20) = (((-(v[5]&j))>>31)&fcol)+bcol;
 			if ((*c) == 9) { for(i=24;i<72;i+=4) *(long *)(x+i) = bcol; x += ((2*6)<<2); }
 		}
-#endif
 }
 
 static long gkrand = 0;
@@ -1426,10 +1425,10 @@ static float fsqrecip[5860]; //75*75 + 15*15 + 3*3 = 5859 is max value (5*5*5 bo
 void estnorm (long x, long y, long z, point3d *fp)
 {
 	lpoint3d n;
-	long xx, yy, zz, b[5], i, j, k;
+	long xx, yy, zz, b[5], j;
 	union {
-	    long *lptr; //Original; but has 2 distinct uses.
-	    int64_t *i64ptr;
+		long *lptr; //Original; but has 2 distinct uses.
+		int64_t *i64ptr;
 	};//! Depends on endianess
 	float f;
 
@@ -1482,7 +1481,7 @@ void estnorm (long x, long y, long z, point3d *fp)
 	{
 		if (lptr >= (long *)(xbsbuf + 1 + 10 * 5))
 		{
-                        b[0] = ((lptr[  0]>>z)&31); b[1] = ((lptr[-10]>>z)&31);
+			b[0] = ((lptr[  0]>>z)&31); b[1] = ((lptr[-10]>>z)&31);
 			b[2] = ((lptr[-20]>>z)&31); b[3] = ((lptr[-30]>>z)&31);
 			b[4] = ((lptr[-40]>>z)&31); lptr -= 50;
 		}
@@ -1552,7 +1551,7 @@ void setnormflash (float px, float py, float pz, long flashradius, long intens)
 {
 	point3d fp;
 	float f, fintens;
-	long i, j, k, l, m, x, y, z, xx, yy, xi, yi, xe, ye, ipx, ipy, ipz;
+	long i, j, k, m, x, y, z, xx, yy, xi, yi, xe, ye, ipx, ipy, ipz;
 	long ceilnum, sq;
 	char *v;
 
@@ -2767,8 +2766,7 @@ sphtracecont:;
 void clipmove (dpoint3d *p, dpoint3d *v, double acr)
 {
 	double f, gx, gy, gz, nx, ny, nz, ex, ey, ez, hitx, hity, hitz, cr;
-	//double nx2, ny2, nz2, ex2, ey2, ez2; //double ox, oy, oz;
-	long i, j, k;
+	long i, j;
 
 	//ox = p->x; oy = p->y; oz = p->z;
 	gx = p->x+v->x; gy = p->y+v->y; gz = p->z+v->z;
@@ -2783,19 +2781,8 @@ void clipmove (dpoint3d *p, dpoint3d *v, double acr)
 
 		cr -= 1e-7;  //Shrinking radius error control hack
 
-		//j = sphtraceo(p->x,p->y,p->z,v->x,v->y,v->z,&nx,&ny,&nz,&ex,&ey,&ez,cr,acr);
-		//k = sphtraceo(p->x,p->y,p->z,v->x,v->y,v->z,&nx2,&ny2,&nz2,&ex2,&ey2,&ez2,cr,acr);
-
 		j = sphtrace(p->x,p->y,p->z,v->x,v->y,v->z,&nx,&ny,&nz,&ex,&ey,&ez,cr,acr);
 
-		//if ((j != k) || (fabs(nx-nx2) > .000001) || (fabs(ny-ny2) > .000001) || (fabs(nz-nz2) > .000001) ||
-		//   ((j == 0) && ((fabs(ex-ex2) > .000001) || (fabs(ey-ey2) > .000001) || (fabs(ez-ez2) > .000001))))
-		//{
-		//   printf("%d %f %f %f %f %f %f\n",i,p->x,p->y,p->z,v->x,v->y,v->z);
-		//   printf("%f %f %f ",nx,ny,nz); if (!j) printf("%f %f %f\n",ex,ey,ez); else printf("\n");
-		//   printf("%f %f %f ",nx2,ny2,nz2); if (!k) printf("%f %f %f\n",ex2,ey2,ez2); else printf("\n");
-		//   printf("\n");
-		//}
 		if (j) { p->x = nx; p->y = ny; p->z = nz; break; }
 
 		vx5.cliphit[i].x = ex; vx5.cliphit[i].y = ey; vx5.cliphit[i].z = ez;
@@ -2987,7 +2974,7 @@ void sprhitscan (dpoint3d *p0, dpoint3d *v0, vx5sprite *spr, lpoint3d *h, kv6vox
 	point3d t, u, v;
 	lpoint3d a, d, p, q;
 	float f, g;
-	long i, x, y, xup, ix0, ix1;
+	long x, y, xup, ix0, ix1;
 
 	(*ind) = 0;
 	if (spr->flags&2)
@@ -3210,7 +3197,6 @@ long loaddta (const char *filename, dpoint3d *ipo, dpoint3d *ist, dpoint3d *ihe,
 	long i, j, p, leng, minz = 255, maxz = 0, h[5], longpal[256];
 	char dat, *dtahei, *dtacol, *v, dafilename[MAX_PATH];
 	float f;
-	FILE *fp;
 
 	if (!vbuf) { vbuf = (long *)malloc((VOXSIZ>>2)<<2); if (!vbuf) evilquit("vbuf malloc failed"); }
 	if (!vbit) { vbit = (long *)malloc((VOXSIZ>>7)<<2); if (!vbit) evilquit("vbuf malloc failed"); }
@@ -3313,7 +3299,6 @@ long loadpng (const char *filename, dpoint3d *ipo, dpoint3d *ist, dpoint3d *ihe,
 	long i, j, k, l, p, leng, minz = 255, maxz = 0;
 	char *v, *buf;
 	float f;
-	FILE *fp;
 
 	if (!vbuf) { vbuf = (long *)malloc((VOXSIZ>>2)<<2); if (!vbuf) evilquit("vbuf malloc failed"); }
 	if (!vbit) { vbit = (long *)malloc((VOXSIZ>>7)<<2); if (!vbit) evilquit("vbuf malloc failed"); }
@@ -3455,8 +3440,6 @@ void scum2finish();
  */
 void loadbsp (const char *filnam, dpoint3d *ipo, dpoint3d *ist, dpoint3d *ihe, dpoint3d *ifo)
 {
-	FILE *fp;
-	dpoint3d dp;
 	float f, xof, yof, zof, sc, rsc;
 	long numplanes, numnodes, numleafs, fpos[17], flng[17];
 	long i, x, y, z, z0, z1, vcnt, *lptr, minx, miny, minz, maxx, maxy, maxz;
@@ -3568,9 +3551,8 @@ void loadbsp (const char *filnam, dpoint3d *ipo, dpoint3d *ist, dpoint3d *ihe, d
  */
 long loadvxl (const char *lodfilnam, dpoint3d *ipo, dpoint3d *ist, dpoint3d *ihe, dpoint3d *ifo)
 {
-	FILE *fil;
-	long i, j, fsiz;
-	char *v, *v2;
+	long i, fsiz;
+	char *v;
 
 	if (!vbuf) { vbuf = (long *)malloc((VOXSIZ>>2)<<2); if (!vbuf) evilquit("vbuf malloc failed"); }
 	if (!vbit) { vbit = (long *)malloc((VOXSIZ>>7)<<2); if (!vbit) evilquit("vbuf malloc failed"); }
@@ -4920,7 +4902,7 @@ void setrect (lpoint3d *hit, lpoint3d *hit2, long dacol)
 void setspans (vspans *lst, long lstnum, lpoint3d *offs, long dacol)
 {
 	void (*modslab)(long *, long, long);
-	long i, j, x, y, z0, z1, *lptr;
+	long i, x, y, z0, z1, *lptr;
 	char ox, oy;
 
 	if (lstnum <= 0) return;
@@ -4997,7 +4979,7 @@ static void canseerange (point3d *p0, point3d *p1)
 {
 	lpoint3d a, c, d, p, i;
 	point3d f, g;
-	long cnt, j;
+	long cnt;
 
 	ftol(p0->x-.5,&a.x); ftol(p0->y-.5,&a.y); ftol(p0->z-.5,&a.z);
 	ftol(p1->x-.5,&c.x); ftol(p1->y-.5,&c.y); ftol(p1->z-.5,&c.z);
@@ -5036,7 +5018,7 @@ void settri (point3d *p0, point3d *p1, point3d *p2, long bakit)
 {
 	point3d n;
 	float f, x0, y0, z0, x1, y1, z1, rx, ry, k0, k1;
-	long i, x, y, z, iz0, iz1, minx, maxx, miny, maxy;
+	long i, x, y, iz0, iz1, minx, maxx, miny, maxy;
 
 	if (p0->x < p1->x) { x0 = p0->x; x1 = p1->x; } else { x0 = p1->x; x1 = p0->x; }
 	if (p2->x < x0) x0 = p2->x;
@@ -5402,9 +5384,9 @@ void sethull3d (point3d *pt, long nump, long dacol, long bakit)
 {
 	void (*modslab)(long *, long, long);
 	float fminx, fminy, fminz, fmaxx, fmaxy, fmaxz;
-	long i, x, y, xs, ys, xe, ye, z0, z1;
+	long i, x, y, xs, ys, xe, ye;
 
-	if (nump > (MAXPOINTS>>1)) nump = (MAXPOINTS>>1); //DANGER!!!
+	if (nump > (MAXPOINTS>>1)) nump = (MAXPOINTS>>1); //! DANGER!!!?
 
 	fminx = fminy = VSID; fminz = MAXZDIM; fmaxx = fmaxy = fmaxz = 0;
 	for(i=0;i<nump;i++)
@@ -5632,7 +5614,7 @@ void splitpoly (float *px, float *py, long *point2, long *bakn,
 void ordfillpolygon (float *px, float *py, long *point2, long n, long day, long xs, long xe, void (*modslab)(long *, long, long))
 {
 	float f;
-	long k, i, z, zz, z0, z1, zx, sx0, sy0, sx1, sy1, sy, nsy, gap, numrst;
+	long k, i, z, zz, z0, z1, zx, sy0, sy1, sy, nsy, gap, numrst;
 	long np, ni;
 
 	if (n < 3) return;
@@ -6155,7 +6137,7 @@ floodfill3dskip2:;
 	//hollowfill
 void sethollowfill ()
 {
-	long i, j, l, x, y, z0, z1, *lptr, (*bakcolfunc)(lpoint3d *);
+	long i, j, x, y, z0, z1, (*bakcolfunc)(lpoint3d *);//! confusing declaration
 	char *v;
 
 	vx5.minx = 0; vx5.maxx = VSID;
@@ -6573,7 +6555,7 @@ void drawtile (long tf, long tp, long tx, long ty, long tcx, long tcy,
 					long sx, long sy, long xz, long yz, long black, long white)
 {
 	long sx0, sy0, sx1, sy1, x0, y0, x1, y1, x, y, u, v, ui, vi, uu, vv;
-	long p, i, j, a;
+	long p, i, j;
 
 	if (!tf) return;
 	sx0 = sx - mulshr16(tcx,xz); sx1 = sx0 + xz*tx;
@@ -7010,13 +6992,12 @@ void drawpolyquad (long rpic, long rbpl, long rxsiz, long rysiz,
 						 float x2, float y2, float z2, float u2, float v2,
 						 float x3, float y3, float z3)
 {
-	point3d fp, fp2;
+	point3d fp;
 	float px[6], py[6], pz[6], pu[6], pv[6], px2[4], py2[4], pz2[4], pu2[4], pv2[4];
-	float f, t, u, v, r, nx, ny, nz, ox, oy, oz, scaler;
+	float f, u, v, r, nx, ny, nz, ox, oy, oz;
 	float dx, dy, db, ux, uy, ub, vx, vy, vb;
-	long i, j, k, l, imin, imax, sx, sxe, sy, sy1;
-	long x, xi, *p, *pe, uvmax, iu, iv, n;
-	long dd, uu, vv, ddi, uui, vvi, distlutoffs;
+	long i, j, imin, imax, sx, sxe, sy, sy1;
+	long x, xi, *p, *pe, iu, iv, n;
 
 	px2[0] = x0; py2[0] = y0; pz2[0] = z0; pu2[0] = u0; pv2[0] = v0;
 	px2[1] = x1; py2[1] = y1; pz2[1] = z1; pu2[1] = u1; pv2[1] = v1;
@@ -7194,7 +7175,7 @@ static long sxlparspos, sxlparslen;
  */
 long loadsxl (const char *sxlnam, char **vxlnam, char **skynam, char **globst)
 {
-	long j, k, m, n;
+	long j, m, n;
 
 		//NOTE: MUST buffer file because insertsprite uses kz file code :/
 	if (!kzopen(sxlnam)) return(0);
@@ -7467,7 +7448,7 @@ void equivecinit (long n)
 
 //EQUIVEC code ends -------------------------------------------------------
 
-static uintptr_t umulmip[9] = {0,4294967295u,2147483648,1431655765,1073741824,
+static const uint32_t umulmip[9] = {0,4294967295u,2147483648,1431655765,1073741824,
 								  858993459,715827882,613566756,536870912};
 /**
  * Generate 1 more mip-level for a .KV6 sprite. This function generates a
@@ -7494,7 +7475,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 
 	long j, x, y, z, xs, ys, zs, xysiz, n, oxn, oxyn;
 	intptr_t xptr;
-	long xx, yy, zz, r, g, b, vis, npix, sxyi2i;
+	long zz, r, g, b, vis, npix, sxyi2i;
 	char vecbuf[8];
 
 	if ((!kv6) || (kv6->lowermip)) return(0);
@@ -7506,10 +7487,15 @@ kv6data *genmipkv6 (kv6data *kv6)
 	xysiz = ((
 		((xs*ys)<<1) + 3
 	)&~3);
+//? magic 2 in (xs*ys)<<1: sizeof(short)?
+//? magic 4 in xs<<2: sizeof(long)?
 	nkv6 = (kv6data *) malloc(
-		sizeof(kv6data) + (xs<<2) + xysiz + kv6->numvoxs*sizeof(kv6voxtype)
+		sizeof(kv6data) +
+		(xs<<2) +
+		xysiz +
+		kv6->numvoxs*sizeof(kv6voxtype)
 	);
-	if (!nkv6) return(0);
+	if (!nkv6) return(0);//! Could use extra measure/flag
 
 	kv6->lowermip = nkv6;
 	nkv6->xsiz = xs;
@@ -7521,9 +7507,9 @@ kv6data *genmipkv6 (kv6data *kv6)
 	nkv6->namoff = 0;
 	nkv6->lowermip = 0;
 
-	xptr = (intptr_t)(nkv6 + 1); //One past nkv6
-	xyptr = (unsigned short *)(xptr + (xs<<2)); //4 * ((xsize+1)/2) bytes past xptr
-	voxptr = (kv6voxtype *)(((long)xyptr) + xysiz);
+	xptr = (intptr_t)(nkv6 + 1); //Start of data block
+	xyptr = (unsigned short *)(xptr + (xs<<2));
+	voxptr = (kv6voxtype *)(((uintptr_t)xyptr) + xysiz);
 	n = 0;
 
 	v0[0] = kv6->vox; sxyi2 = kv6->ylen; sxyi2i = (kv6->ysiz<<1);
@@ -7597,9 +7583,10 @@ kv6data *genmipkv6 (kv6data *kv6)
 	}
 
 	nkv6->leng = sizeof(kv6data) + (xs<<2) + xysiz + n*sizeof(kv6voxtype);
-	nkv6 = (kv6data *)realloc(nkv6,nkv6->leng); if (!nkv6) return(0);
-	nkv6->xlen = (unsigned long *)(((long)nkv6) + sizeof(kv6data));
-	nkv6->ylen = (unsigned short *)(((long)nkv6->xlen) + (xs<<2));
+	nkv6 = (kv6data *)realloc(nkv6,nkv6->leng);//! Reallocate, because first allocation was too big
+	if (!nkv6) {return(0);}//! Could use extra measure/flag. Keeps too big MIP.
+	nkv6->xlen = (unsigned long *)(nkv6 + 1);//! eh?
+	nkv6->ylen = (unsigned short *)(((uintptr_t)nkv6->xlen) + (xs<<2));
 	nkv6->vox = (kv6voxtype *)(((long)nkv6->ylen) + xysiz);
 	nkv6->numvoxs = n;
 	kv6->lowermip = nkv6;
@@ -7634,43 +7621,43 @@ void savekv6 (const char *filnam, kv6data *kv)
 	//NOTE: should make this inline to getkv6!
 static kv6data *loadkv6 (const char *filnam)
 {
-	FILE *fil;
-	kv6data tk, *newkv6;
+	kv6data tk, *newkv6;// New kv6data struct is head is followed by block of voxeldata.
 	size_t data_block_size;
 
-	if (!kzopen(filnam))//Initializes kz-file functions
+	if (!kzopen(filnam))//Initializes kz-file functions ?Skips kv6 file tag?
 	{
 			//File not found, but allocate a structure anyway
 			//   so it can keep track of the filename
-		if (!(newkv6 = (kv6data *)malloc(sizeof(kv6data)))) return(0);
+		newkv6 = (kv6data *)malloc(sizeof(kv6data));
+		if (!newkv6) return(0);
 		newkv6->leng = sizeof(kv6data);
 		newkv6->xsiz = newkv6->ysiz = newkv6->zsiz = 0;
-		newkv6->xpiv = newkv6->ypiv = newkv6->zpiv = 0;
+		newkv6->xpiv = newkv6->ypiv = newkv6->zpiv = 0.0f;
 		newkv6->numvoxs = 0;
 		newkv6->namoff = 0;
 		newkv6->lowermip = 0;
-		newkv6->vox = (kv6voxtype *)(((long)newkv6)+sizeof(kv6data));
+		newkv6->vox = (kv6voxtype *)(newkv6 + 1);//! Start of data block after header, but there isn't any
 		newkv6->xlen = (unsigned long *)newkv6->vox;
 		newkv6->ylen = (unsigned short *)newkv6->xlen;
 		return(newkv6);
 	}
 
-	kzread((void *)&tk,32);
-
-	data_block_size = tk.numvoxs*sizeof(kv6voxtype) + tk.xsiz*4 + tk.xsiz*tk.ysiz*2;
-	newkv6 = (kv6data *)malloc(data_block_size+sizeof(kv6data));
+	// Read in leng, xsiz, ysiz, zsiz, xpiv, ypiv, zpiv and numvoxs
+	kzread((void *)&tk,32);//! Assumes kv6data to be packed.
+	data_block_size = tk.numvoxs*sizeof(kv6voxtype) + tk.xsiz*sizeof(long) + tk.xsiz*tk.ysiz*sizeof(short);
+	newkv6 = (kv6data *)malloc(sizeof(kv6data) + data_block_size);
 	if (!newkv6) { kzclose(); return(0); }
-	if (((long)newkv6)&3) evilquit("getkv6 malloc not 32-bit aligned!");
+	if (((uintptr_t)newkv6)&3) evilquit("getkv6 malloc not 32-bit aligned!");
 
-	newkv6->leng = data_block_size+sizeof(kv6data);
-	memcpy(&newkv6->xsiz,&tk.xsiz,28);
+	newkv6->leng = sizeof(kv6data) + data_block_size;
+	memcpy(&newkv6->xsiz,&tk.xsiz,28);//Copies xsiz, ysiz, zsiz, xpiv, ypiv, zpiv and numvoxs
 	newkv6->namoff = 0;
 	newkv6->lowermip = 0;
-	newkv6->vox = (kv6voxtype *)(((long)newkv6)+sizeof(kv6data));
-	newkv6->xlen = (unsigned long *)(((long)newkv6->vox)+tk.numvoxs*sizeof(kv6voxtype));
+	newkv6->vox = (kv6voxtype *)(newkv6 + 1);//Start of data block after header
+	newkv6->xlen = (unsigned long *)(((uintptr_t)newkv6->vox)+tk.numvoxs*sizeof(kv6voxtype));
 	newkv6->ylen = (unsigned short *)(((long)newkv6->xlen) + tk.xsiz*4);
 
-	kzread((void *)newkv6->vox,data_block_size);
+	kzread((void *)newkv6->vox,data_block_size);//! Starts reading at right location?!
 	kzclose();
 	return(newkv6);
 }
@@ -8229,7 +8216,7 @@ static void floodsucksprite (vx5sprite *spr, kv6data *kv, long ox, long oy,
 {
 	kv6voxtype *v, *ve, *ov, *v2, *v3;
 	kv6data *kv6;
-	long i, j, x, y, z, x0, y0, z0, x1, y1, z1, n, vfif0, vfif1;
+	long i, j, x, y, x0, y0, z0, x1, y1, z1, n, vfif0, vfif1;
 
 	x0 = x1 = ox; y0 = y1 = oy; z0 = v0->z; z1 = v1->z;
 
@@ -8638,7 +8625,7 @@ static long kfatime2seq (kfatype *kfa, long tim)
 void animsprite (vx5sprite *s, long ti)
 {
 	kfatype *kfa;
-	long i, j, k, x, y, z, zz, trat;
+	long i, x, z, zz, trat;
 	long trat2, z0, zz0, frm0;
 
 	if (!(s->flags&2)) return;
@@ -8803,7 +8790,7 @@ static signed char gkv6colz[27] = {0,  1,-1, 0, 0, 0, 0, -1, 1, 0, 0, 1,-1, 1,-1
 long kv6colfunc (lpoint3d *p)
 {
 	kv6voxtype *v0, *v1, *v, *ve;
-	long i, j, k, x, y, z, ox, oy, nx, ny, nz, mind, d;
+	long j, k, x, y, z, ox, oy, nx, ny, nz, mind, d;
 
 	x = ((p->x*gfrezx.x + p->y*gfrezy.x + p->z*gfrezz.x + gfrezp.x)>>16);
 	y = ((p->x*gfrezx.y + p->y*gfrezy.y + p->z*gfrezz.y + gfrezp.y)>>16);
