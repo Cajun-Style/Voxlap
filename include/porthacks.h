@@ -112,7 +112,7 @@ typedef unsigned int     uintptr_t;
 	#define EXTERN_C extern
 #endif
 
-define COSSIN(degree, cos_, sin_) \
+#define COSSIN(degree, cos_, sin_) \
 	do                         \
 	{                          \
 		sin_ = sin(degree);\
