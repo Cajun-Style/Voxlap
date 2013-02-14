@@ -53,7 +53,7 @@
 #define FPREC (256*4096)
 //#define USEV5ASM 1                 //now done via makefile
 #define SCISDIST 1.0
-#define GOLDRAT 0.3819660112501052 //Golden Ratio: 1 - 1/((sqrt(5)+1)/2)
+#define GOLDRAT 0.3819660112501052 //Golden Ratio: 1 - 1/((sqrtf5)+1)/2)
 #define ESTNORMRAD 2               //Specially optimized for 2: DON'T CHANGE unless testing!
 
 static const size_t L_SIZE = sizeof(long);
@@ -551,7 +551,7 @@ long woodcolfunc (lpoint3d *p)
 				//UNIFORM spherical randomization (see spherand.c)
 			dz = 1.0f-(float)rand()/32768.0f*.04f;
 			a = (float)rand()/32768.0f*PI*2.0f; fcossin(a,&dx,&dy);
-			f = sqrt(1.0f-dz*dz); dx *= f; dy *= f;
+			f = sqrtf(1.0f-dz*dz); dx *= f; dy *= f;
 				//??z: rings,  ?z?: vertical,  z??: horizontal (nice)
 			vx[i] = dz; vy[i] = fabs(dy); vz[i] = dx;
 		}
@@ -572,7 +572,7 @@ long woodcolfunc (lpoint3d *p)
 
 		//u = distance to center of randomly oriented cylinder
 	u = vx[c]*dx + vy[c]*dy + vz[c]*dz;
-	u = sqrt(dx*dx + dy*dy + dz*dz - u*u);
+	u = sqrtf(dx*dx + dy*dy + dz*dz - u*u);
 
 		//ring randomness
 	u += sin((float)xof*.12 + (float)yof*.15) * .5;
@@ -615,7 +615,7 @@ long pngcolfunc (lpoint3d *p)
 			rz = vx5.fpicw.x*fx + vx5.fpicw.y*fy + vx5.fpicw.z*fz;
 			ftol(atan2(ry,rx)*vx5.xoru/(PI*2),&u);
 			if (vx5.picmode == 1) ftol(rz,&v);
-			else ftol((atan2(rz,sqrt(rx*rx+ry*ry))/PI+.5)*vx5.ysiz,&v);
+			else ftol((atan2(rz,sqrtf(rx*rx+ry*ry))/PI+.5)*vx5.ysiz,&v);
 			break;
 		default: //case 3:
 			fx = (float)p->x-vx5.fpico.x;
@@ -995,7 +995,7 @@ void gline (long leng, float x0, float y0, float x1, float y1)
 	vy1 = x1*gistr.y + y1*gihei.y + gcorn[0].y;
 	vz1 = x1*gistr.z + y1*gihei.z + gcorn[0].z;
 
-	f = sqrt(vx1*vx1 + vy1*vy1);
+	f = sqrtf(vx1*vx1 + vy1*vy1);
 	f1 = f / vx1;
 	f2 = f / vy1;
 	if (fabs(vx1) > fabs(vy1)) vd0 = vd0*f1; else vd0 = vd1*f2;
@@ -1851,7 +1851,7 @@ void hrendz (long sx, long sy, long p1, long plc, long incr, long j)
 	do
 	{
 		*(long *)p0 = angstart[plc>>16][j].col;
-		*(float *)(p0+i) = (float)angstart[plc>>16][j].dist/sqrt(dirx*dirx+diry*diry);
+		*(float *)(p0+i) = (float)angstart[plc>>16][j].dist/sqrtf(dirx*dirx+diry*diry);
 		dirx += optistrx; diry += optistry; plc += incr; p0 += 4;
 	} while (p0 != p1);
 }
@@ -1867,7 +1867,7 @@ void vrendz (long sx, long sy, long p1, long iplc, long iinc)
 	while (p0 < p1)
 	{
 		*(long *)p0 = angstart[uurend[sx]>>16][iplc].col;
-		*(float *)(p0+i) = (float)angstart[uurend[sx]>>16][iplc].dist/sqrt(dirx*dirx+diry*diry);
+		*(float *)(p0+i) = (float)angstart[uurend[sx]>>16][iplc].dist/sqrtf(dirx*dirx+diry*diry);
 		dirx += optistrx; diry += optistry; uurend[sx] += uurend[sx+MAXXDIM]; p0 += 4; iplc += iinc; sx++;
 	}
 }
@@ -1888,7 +1888,7 @@ void hrendzfog (long sx, long sy, long p1, long plc, long incr, long j)
 		*(long *)p0 = ((((( vx5.fogcol     &255)-( k     &255))*l)>>15)    ) +
 						  ((((((vx5.fogcol>> 8)&255)-((k>> 8)&255))*l)>>15)<< 8) +
 						  ((((((vx5.fogcol>>16)&255)-((k>>16)&255))*l)>>15)<<16)+k;
-		*(float *)(p0+i) = (float)angstart[plc>>16][j].dist/sqrt(dirx*dirx+diry*diry);
+		*(float *)(p0+i) = (float)angstart[plc>>16][j].dist/sqrtf(dirx*dirx+diry*diry);
 		dirx += optistrx; diry += optistry; plc += incr; p0 += 4;
 	} while (p0 != p1);
 }
@@ -1909,7 +1909,7 @@ void vrendzfog (long sx, long sy, long p1, long iplc, long iinc)
 		*(long *)p0 = ((((( vx5.fogcol     &255)-( k     &255))*l)>>15)    ) +
 						  ((((((vx5.fogcol>> 8)&255)-((k>> 8)&255))*l)>>15)<< 8) +
 						  ((((((vx5.fogcol>>16)&255)-((k>>16)&255))*l)>>15)<<16)+k;
-		*(float *)(p0+i) = (float)angstart[uurend[sx]>>16][iplc].dist/sqrt(dirx*dirx+diry*diry);
+		*(float *)(p0+i) = (float)angstart[uurend[sx]>>16][iplc].dist/sqrtf(dirx*dirx+diry*diry);
 		dirx += optistrx; diry += optistry; uurend[sx] += uurend[sx+MAXXDIM]; p0 += 4; iplc += iinc; sx++;
 	}
 }
@@ -2049,13 +2049,13 @@ void opticast ()
 	x0 = x3 = wx0; y0 = y1 = wy0; x1 = x2 = wx1; y2 = y3 = wy1;
 	if (fy < 0)
 	{
-		if (fx < 0) { f = sqrt(fx*fy); x0 = cx-f; y0 = cy-f; }
-		if (gx > 0) { f = sqrt(-gx*fy); x1 = cx+f; y1 = cy-f; }
+		if (fx < 0) { f = sqrtffx*fy); x0 = cx-f; y0 = cy-f; }
+		if (gx > 0) { f = sqrtf-gx*fy); x1 = cx+f; y1 = cy-f; }
 	}
 	if (gy > 0)
 	{
-		if (gx > 0) { f = sqrt(gx*gy); x2 = cx+f; y2 = cy+f; }
-		if (fx < 0) { f = sqrt(-fx*gy); x3 = cx-f; y3 = cy+f; }
+		if (gx > 0) { f = sqrtfgx*gy); x2 = cx+f; y2 = cy+f; }
+		if (fx < 0) { f = sqrtf-fx*gy); x3 = cx-f; y3 = cy+f; }
 	}
 	if (x0 > x1) { if (fx < 0) y0 = fx/gx*fy + cy; else y1 = gx/fx*fy + cy; }
 	if (y1 > y2) { if (fy < 0) x1 = fy/gy*gx + cx; else x2 = gy/fy*gx + cx; }
@@ -2305,13 +2305,13 @@ double findmaxcr (double px, double py, double pz, double cr)
 		if (i0 == i1) break;
 		x = clipit[i0].x; y = clipit[i0].y; i0 = ((i0+1)&(MAXCLIPIT-1));
 	}
-	return(sqrt(maxcr));
+	return(sqrtfmaxcr));
 }
 
 #if 0
 
 	//Point: (x,y), line segment: (px,py)-(px+vx,py+vy)
-	//Returns 1 if point is closer than sqrt(cr2) to line
+	//Returns 1 if point is closer than sqrtfcr2) to line
 long dist2linept2d (double x, double y, double px, double py, double vx, double vy, double cr2)
 {
 	double f, g;
@@ -2394,7 +2394,7 @@ long sphtraceo (double px, double py, double pz,    //start pt
 						//   //Proposed compare optimization:
 						//f = Zb*Zb-u; g = vxyz*t; h = (Zb*2-g)*g;
 						//if ((uint64_t *)&f < (uint64_t *)&h)
-					u = (Zb - sqrt(u)) * rvxyz;
+					u = (Zb - sqrtfu)) * rvxyz;
 					if ((u >= 0) && (u < t))
 					{
 						*fx = xx; *fy = yy; *fz = zz; t = u;
@@ -2414,7 +2414,7 @@ long sphtraceo (double px, double py, double pz,    //start pt
 				if ((((long *)&u)[1] | ((long *)&Zb)[1]) >= 0)
 				//if ((u >= 0) && (Zb >= 0))
 				{
-					u = (Zb - sqrt(u)) * rvyz;
+					u = (Zb - sqrtfu)) * rvyz;
 					if ((u >= 0) && (u < t))
 					{
 						ex = vx*u + px;
@@ -2435,7 +2435,7 @@ long sphtraceo (double px, double py, double pz,    //start pt
 				if ((((long *)&u)[1] | ((long *)&Zb)[1]) >= 0)
 				//if ((u >= 0) && (Zb >= 0))
 				{
-					u = (Zb - sqrt(u)) * rvxz;
+					u = (Zb - sqrtfu)) * rvxz;
 					if ((u >= 0) && (u < t))
 					{
 						ey = vy*u + py;
@@ -2456,7 +2456,7 @@ long sphtraceo (double px, double py, double pz,    //start pt
 				if ((((long *)&u)[1] | ((long *)&Zb)[1]) >= 0)
 				//if ((u >= 0) && (Zb >= 0))
 				{
-					u = (Zb - sqrt(u)) * rvxy;
+					u = (Zb - sqrtfu)) * rvxy;
 					if ((u >= 0) && (u < t))
 					{
 						ez = vz*u + pz;
@@ -2641,7 +2641,7 @@ long sphtrace (double x0, double y0, double z0,          //start pt
 			nx = intx-x0; ny = inty-y0; t = vx*nx + vy*ny; if (((long *)&t)[1] < 0) continue;
 			f = cr2 - nx*nx - ny*ny; if (((long *)&f)[1] >= 0) { t = -1.0; continue; }
 			f = f*dxy + t*t; if (((long *)&f)[1] < 0) { t = -1.0; continue; }
-			t = (t-sqrt(f))*rxy;
+			t = (t-sqrtff))*rxy;
 		} while (0);
 		if (t >= gendt) goto sphtracecont;
 		if (((long *)&t)[1] < 0) intz = z0; else intz = vz*t + z0;
@@ -2705,7 +2705,7 @@ long sphtrace (double x0, double y0, double z0,          //start pt
 				if (((long *)&dxz)[1] != 0) //hit y-axis edge?
 				{
 					f = nx-x0; t = vx*f + fz; f = (fc - f*f)*dxz + t*t;
-					if (((long *)&f)[1] >= 0) t = (t-sqrt(f))*rxz; else t = -1.0;
+					if (((long *)&f)[1] >= 0) t = (t-sqrtff))*rxz; else t = -1.0;
 				} else t = -1.0;
 				ny = vy*t + y0;
 					  if (((long *)&ny)[1] > ((long *)&dy1)[1]) j |= 0x10;
@@ -2724,7 +2724,7 @@ long sphtrace (double x0, double y0, double z0,          //start pt
 				if (((long *)&dyz)[1] != 0) //hit x-axis edge?
 				{
 					f = ny-y0; t = vy*f + fz; f = (fc - f*f)*dyz + t*t;
-					if (((long *)&f)[1] >= 0) t = (t-sqrt(f))*ryz; else t = -1.0;
+					if (((long *)&f)[1] >= 0) t = (t-sqrtff))*ryz; else t = -1.0;
 				} else t = -1.0;
 				nx = vx*t + x0;
 					  if (((long *)&nx)[1] > ((long *)&dx1)[1]) j |= 0x20;
@@ -2742,7 +2742,7 @@ long sphtrace (double x0, double y0, double z0,          //start pt
 			t = vx*nx + vy*ny + fz; if (((long *)&t)[1] < 0) continue;
 			f = fc - nx*nx - ny*ny; if (((long *)&f)[1] >= 0) continue;
 			f = f*dxyz + t*t; if (((long *)&f)[1] < 0) continue;
-			t = (t-sqrt(f))*rxyz;
+			t = (t-sqrtff))*rxyz;
 			if (t < gendt) { gendt = t; (*clpx) = intx; (*clpy) = inty; (*clpz) = intz; }
 		}
 sphtracecont:;
@@ -3021,7 +3021,7 @@ void sprhitscan (dpoint3d *p0, dpoint3d *v0, vx5sprite *spr, lpoint3d *h, kv6vox
 
 	ix1 -= ix0;
 
-	g = 262144.0 / sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+	g = 262144.0 / sqrtfv.x*v.x + v.y*v.y + v.z*v.z);
 
 		//Note: (a.x,a.y,a.z) MUST be rounded towards -inf
 	ftol(u.x-.5,&a.x); if ((unsigned long)(a.x-ix0) >= ix1) return;
@@ -3705,11 +3705,11 @@ void orthonormalize (point3d *v0, point3d *v1, point3d *v2)
 {
 	float t;
 
-	t = 1.0 / sqrt((v0->x)*(v0->x) + (v0->y)*(v0->y) + (v0->z)*(v0->z));
+	t = 1.0 / sqrtf(v0->x)*(v0->x) + (v0->y)*(v0->y) + (v0->z)*(v0->z));
 	(v0->x) *= t; (v0->y) *= t; (v0->z) *= t;
 	t = (v1->x)*(v0->x) + (v1->y)*(v0->y) + (v1->z)*(v0->z);
 	(v1->x) -= t*(v0->x); (v1->y) -= t*(v0->y); (v1->z) -= t*(v0->z);
-	t = 1.0 / sqrt((v1->x)*(v1->x) + (v1->y)*(v1->y) + (v1->z)*(v1->z));
+	t = 1.0 / sqrtf(v1->x)*(v1->x) + (v1->y)*(v1->y) + (v1->z)*(v1->z));
 	(v1->x) *= t; (v1->y) *= t; (v1->z) *= t;
 	(v2->x) = (v0->y)*(v1->z) - (v0->z)*(v1->y);
 	(v2->y) = (v0->z)*(v1->x) - (v0->x)*(v1->z);
@@ -3720,11 +3720,11 @@ void dorthonormalize (dpoint3d *v0, dpoint3d *v1, dpoint3d *v2)
 {
 	double t;
 
-	t = 1.0 / sqrt((v0->x)*(v0->x) + (v0->y)*(v0->y) + (v0->z)*(v0->z));
+	t = 1.0 / sqrtf(v0->x)*(v0->x) + (v0->y)*(v0->y) + (v0->z)*(v0->z));
 	(v0->x) *= t; (v0->y) *= t; (v0->z) *= t;
 	t = (v1->x)*(v0->x) + (v1->y)*(v0->y) + (v1->z)*(v0->z);
 	(v1->x) -= t*(v0->x); (v1->y) -= t*(v0->y); (v1->z) -= t*(v0->z);
-	t = 1.0 / sqrt((v1->x)*(v1->x) + (v1->y)*(v1->y) + (v1->z)*(v1->z));
+	t = 1.0 / sqrtf(v1->x)*(v1->x) + (v1->y)*(v1->y) + (v1->z)*(v1->z));
 	(v1->x) *= t; (v1->y) *= t; (v1->z) *= t;
 	(v2->x) = (v0->y)*(v1->z) - (v0->z)*(v1->y);
 	(v2->y) = (v0->z)*(v1->x) - (v0->x)*(v1->z);
@@ -3788,7 +3788,7 @@ void axisrotate (point3d *p, point3d *axis, float w)
 
 	fcossin(w,&c,&s);
 	t = axis->x*axis->x + axis->y*axis->y + axis->z*axis->z; if (t == 0) return;
-	t = 1.0 / sqrt(t); ax.x = axis->x*t; ax.y = axis->y*t; ax.z = axis->z*t;
+	t = 1.0 / sqrtft); ax.x = axis->x*t; ax.y = axis->y*t; ax.z = axis->z*t;
 
 	t = 1.0-c;
 	k[0] = ax.x*t; k[7] = ax.x*s; oz = ax.y*k[0];
@@ -3833,7 +3833,7 @@ void slerp (point3d *istr, point3d *ihei, point3d *ifor,
 	if (c > 1) c = 1;
 	fcossin(acos(c)*rat,&c,&s);
 
-	t = 1.0 / sqrt(t); ax.x *= t; ax.y *= t; ax.z *= t;
+	t = 1.0 / sqrtft); ax.x *= t; ax.y *= t; ax.z *= t;
 
 	t = 1.0f-c;
 	k[0] = ax.x*t; k[7] = ax.x*s; oz = ax.y*k[0];
@@ -4639,7 +4639,7 @@ void setsphere (lpoint3d *hit, long hitrad, long dacol)
 	if (vx5.colfunc == sphcolfunc)
 	{
 		vx5.cen = hit->x+hit->y+hit->z;
-		vx5.daf = 1.f/(hitrad*sqrt(3.f));
+		vx5.daf = 1.f/(hitrad*sqrtf3.f));
 	}
 
 	if (hitrad >= SETSPHMAXRAD-1) hitrad = SETSPHMAXRAD-2;
@@ -4698,7 +4698,7 @@ void setellipsoid (lpoint3d *hit, lpoint3d *hit2, long hitrad, long dacol, long 
 	fx1 = (float)hit2->x; fy1 = (float)hit2->y; fz1 = (float)hit2->z;
 
 	r = (fx1-fx0)*(fx1-fx0) + (fy1-fy0)*(fy1-fy0) + (fz1-fz0)*(fz1-fz0);
-	r = sqrt((float)hitrad*(float)hitrad + r*.25);
+	r = sqrtf(float)hitrad*(float)hitrad + r*.25);
 	c = fz0*fz0 - fz1*fz1; d = r*r*-4; e = d*4;
 	f = c*c + fz1*fz1 * e; g = c + c; h = (fz1-fz0)*2; c = c*h - fz1*e;
 	Za = -h*h - e; if (Za <= 0) { if (bakit) voxbackup(xs,ys,xs,ys,bakit); return; }
@@ -4717,7 +4717,7 @@ void setellipsoid (lpoint3d *hit, lpoint3d *hit2, long hitrad, long dacol, long 
 			b = (x-fx1)*(x-fx1) + (y-fy1)*(y-fy1);
 			t = a-b+d; Zb = t*h + c;
 			t = ((t+g)*t + b*e + f)*Za + Zb*Zb; if (t <= 0) continue;
-			t = sqrt(t);
+			t = sqrtft);
 			ftol((Zb - t)*u,&zs); if (zs < 0) zs = 0;
 			ftol((Zb + t)*u,&ze); if (ze > MAXZDIM) ze = MAXZDIM;
 			modslab(scum2(x,y),zs,ze);
@@ -4762,7 +4762,7 @@ void setcylinder (lpoint3d *p0, lpoint3d *p1, long cr, long dacol, long bakit)
 		return;
 	}
 	t = 1 / t; cx = ((float)(x1-x0))*t; cy = ((float)(y1-y0))*t; cz = ((float)(z1-z0))*t;
-	t = sqrt(t); ux = ((float)(x1-x0))*t; uy = ((float)(y1-y0))*t; uz = ((float)(z1-z0))*t;
+	t = sqrtft); ux = ((float)(x1-x0))*t; uy = ((float)(y1-y0))*t; uz = ((float)(z1-z0))*t;
 
 	if (vx5.colfunc == jitcolfunc) vx5.amount = 0x70707;
 
@@ -4793,7 +4793,7 @@ void setcylinder (lpoint3d *p0, lpoint3d *p1, long cr, long dacol, long bakit)
 
 	if (x0 < x1) { minx = x0; maxx = x1; } else { minx = x1; maxx = x0; }
 	if (y0 < y1) { miny = y0; maxy = y1; } else { miny = y1; maxy = y0; }
-	tcr = cr / sqrt(xxyy); vx = fabs((float)(x1-x0))*tcr; vy = fabs((float)(y1-y0))*tcr;
+	tcr = cr / sqrtfxxyy); vx = fabs((float)(x1-x0))*tcr; vy = fabs((float)(y1-y0))*tcr;
 	t = vx*uz + vy;
 	ftol((float)minx-t,&minx); if (minx < 0) minx = 0;
 	ftol((float)maxx+t,&maxx); if (maxx >= VSID) maxx = VSID-1;
@@ -4808,7 +4808,7 @@ void setcylinder (lpoint3d *p0, lpoint3d *p1, long cr, long dacol, long bakit)
 
 	vx = (fabs(ux) < fabs(uy)); vy = 1.0f-vx; vz = 0;
 	ax = uy*vz - uz*vy; ay = uz*vx - ux*vz; az = ux*vy - uy*vx;
-	t = 1.0 / (sqrt(ax*ax + ay*ay + az*az)*cr);
+	t = 1.0 / (sqrtfax*ax + ay*ay + az*az)*cr);
 	ax *= t; ay *= t; az *= t;
 	bx = ay*uz - az*uy; by = az*ux - ax*uz; bz = ax*uy - ay*ux;
 
@@ -4842,7 +4842,7 @@ void setcylinder (lpoint3d *p0, lpoint3d *p1, long cr, long dacol, long bakit)
 			for(ix=ix0;ix<=ix1;ix++,vx0+=ax,vy0+=bx,vz0+=vz0i)
 			{
 				Zb = vx0*az + vy0*bz; Zc = vx0*vx0 + vy0*vy0 - 1;
-				t = Zb*Zb - Za*Zc; if (*(long *)&t <= 0) continue; t = sqrt(t);
+				t = Zb*Zb - Za*Zc; if (*(long *)&t <= 0) continue; t = sqrtft);
 				ftol(MAX((-Zb-t)*rZa,vz0    ),&iz0); if (iz0 < 0) iz0 = 0;
 				ftol(MIN((-Zb+t)*rZa,vz0+rcz),&iz1); if (iz1 > MAXZDIM) iz1 = MAXZDIM;
 				modslab(scum2(ix,iy),iz0,iz1);
@@ -4854,7 +4854,7 @@ void setcylinder (lpoint3d *p0, lpoint3d *p1, long cr, long dacol, long bakit)
 			{
 				if (*(unsigned long *)&vz0 >= 0x3f800000) continue; //vz0<0||vz0>=1
 				Zb = vx0*az + vy0*bz; Zc = vx0*vx0 + vy0*vy0 - 1;
-				t = Zb*Zb - Za*Zc; if (*(long *)&t <= 0) continue; t = sqrt(t);
+				t = Zb*Zb - Za*Zc; if (*(long *)&t <= 0) continue; t = sqrtft);
 				ftol((-Zb-t)*rZa,&iz0); if (iz0 < 0) iz0 = 0;
 				ftol((-Zb+t)*rZa,&iz1); if (iz1 > MAXZDIM) iz1 = MAXZDIM;
 				modslab(scum2(ix,iy),iz0,iz1);
@@ -5048,7 +5048,7 @@ void settri (point3d *p0, point3d *p1, point3d *p2, long bakit)
 	n.x = (p1->z-p0->z)*(p2->y-p1->y) - (p1->y-p0->y) * (p2->z-p1->z);
 	n.y = (p1->x-p0->x)*(p2->z-p1->z) - (p1->z-p0->z) * (p2->x-p1->x);
 	n.z = (p1->y-p0->y)*(p2->x-p1->x) - (p1->x-p0->x) * (p2->y-p1->y);
-	f = 1.0 / sqrt(n.x*n.x + n.y*n.y + n.z*n.z); if (n.z < 0) f = -f;
+	f = 1.0 / sqrtfn.x*n.x + n.y*n.y + n.z*n.z); if (n.z < 0) f = -f;
 	n.x *= f; n.y *= f; n.z *= f;
 
 	if (n.z > .01)
@@ -5107,7 +5107,7 @@ long triscan (point3d *p0, point3d *p1, point3d *p2, point3d *hit, lpoint3d *lhi
 	n.x = (p1->z-p0->z)*(p2->y-p1->y) - (p1->y-p0->y) * (p2->z-p1->z);
 	n.y = (p1->x-p0->x)*(p2->z-p1->z) - (p1->z-p0->z) * (p2->x-p1->x);
 	n.z = (p1->y-p0->y)*(p2->x-p1->x) - (p1->x-p0->x) * (p2->y-p1->y);
-	f = 1.0 / sqrt(n.x*n.x + n.y*n.y + n.z*n.z); if (n.z < 0) f = -f;
+	f = 1.0 / sqrtfn.x*n.x + n.y*n.y + n.z*n.z); if (n.z < 0) f = -f;
 	n.x *= f; n.y *= f; n.z *= f;
 
 	if (n.z > .01)
@@ -5449,7 +5449,7 @@ static void setsectorb (point3d *p, long *point2, long n, float thick, long daco
 		norm.y += (p[i].z-p[j].z)*(p[k].x-p[j].x) - (p[i].x-p[j].x)*(p[k].z-p[j].z);
 		norm.z += (p[i].x-p[j].x)*(p[k].y-p[j].y) - (p[i].y-p[j].y)*(p[k].x-p[j].x);
 	}
-	f = 1.0 / sqrt(norm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
+	f = 1.0 / sqrtfnorm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
 	norm.x *= f; norm.y *= f; norm.z *= f;
 
 	if ((fabs(norm.z) >= fabs(norm.x)) && (fabs(norm.z) >= fabs(norm.y)))
@@ -5693,7 +5693,7 @@ void setsector (point3d *p, long *point2, long n, float thick, long dacol, long 
 		norm.y += (p[i].z-p[j].z)*(p[k].x-p[j].x) - (p[i].x-p[j].x)*(p[k].z-p[j].z);
 		norm.z += (p[i].x-p[j].x)*(p[k].y-p[j].y) - (p[i].y-p[j].y)*(p[k].x-p[j].x);
 	}
-	f = 1.0 / sqrt(norm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
+	f = 1.0 / sqrtfnorm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
 	norm.x *= f; norm.y *= f; norm.z *= f;
 
 	if (vx5.colfunc == jitcolfunc) vx5.amount = 0x70707;
@@ -5812,11 +5812,11 @@ void setlathe (point3d *p, long numcurs, long dacol, long bakit)
 	norm.x = (p[0].y-p[1].y)*(p[2].z-p[1].z) - (p[0].z-p[1].z)*(p[2].y-p[1].y);
 	norm.y = (p[0].z-p[1].z)*(p[2].x-p[1].x) - (p[0].x-p[1].x)*(p[2].z-p[1].z);
 	norm.z = (p[0].x-p[1].x)*(p[2].y-p[1].y) - (p[0].y-p[1].y)*(p[2].x-p[1].x);
-	f = 1.0 / sqrt(norm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
+	f = 1.0 / sqrtfnorm.x*norm.x + norm.y*norm.y + norm.z*norm.z);
 	norm.x *= f; norm.y *= f; norm.z *= f;
 
 	ax0.x = p[1].x-p[0].x; ax0.y = p[1].y-p[0].y; ax0.z = p[1].z-p[0].z;
-	f = 1.0 / sqrt(ax0.x*ax0.x + ax0.y*ax0.y + ax0.z*ax0.z);
+	f = 1.0 / sqrtfax0.x*ax0.x + ax0.y*ax0.y + ax0.z*ax0.z);
 	ax0.x *= f; ax0.y *= f; ax0.z *= f;
 
 	ax1.x = ax0.y*norm.z - ax0.z*norm.y;
@@ -5837,7 +5837,7 @@ void setlathe (point3d *p, long numcurs, long dacol, long bakit)
 		f = px*px + py*py + pz*pz;     //Note: f is thickness SQUARED
 		if (f > x0) x0 = f;
 	}
-	x0 = sqrt(x0)+1.0;
+	x0 = sqrtfx0)+1.0;
 	tp0.x = ax0.x*y0 + p[0].x; tp1.x = ax0.x*y1 + p[0].x;
 	tp0.y = ax0.y*y0 + p[0].y; tp1.y = ax0.y*y1 + p[0].y;
 	tp0.z = ax0.z*y0 + p[0].z; tp1.z = ax0.z*y1 + p[0].z;
@@ -5870,11 +5870,11 @@ void setlathe (point3d *p, long numcurs, long dacol, long bakit)
 			d = ((float)x-p[0].x)*ax0.x + ((float)y-p[0].y)*ax0.y + ((float)zs-p[0].z)*ax0.z;
 			for(z=zs;z<=ze;z++,d+=ax0.z)
 			{
-					//Another way: p = sqrt((xyz dot ax1)^2 + (xyz dot norm)^2)
+					//Another way: p = sqrtf(xyz dot ax1)^2 + (xyz dot norm)^2)
 				px = ((float)x-p[0].x) - d*ax0.x;
 				py = ((float)y-p[0].y) - d*ax0.y;
 				pz = ((float)z-p[0].z) - d*ax0.z;
-				f = sqrt(px*px + py*py + pz*pz);
+				f = sqrtfpx*px + py*py + pz*pz);
 
 				px = ax0.x*d + ax1.x*f + p[0].x;
 				py = ax0.y*d + ax1.y*f + p[0].y;
@@ -6217,7 +6217,7 @@ static void writepathash (long i, long v)
 	pathashcnt++;
 }
 
-static signed char cdir[26*4] = //sqrt(2) =~ 58/41, sqrt(3) =~ 71/41;
+static signed char cdir[26*4] = //sqrtf2) =~ 58/41, sqrt(3) =~ 71/41;
 {
 	-1, 0, 0,41,  1, 0, 0,41,  0,-1, 0,41,  0, 1, 0,41,  0, 0,-1,41,  0, 0, 1,41,
 	-1,-1, 0,58, -1, 1, 0,58, -1, 0,-1,58, -1, 0, 1,58,  0,-1,-1,58,  0,-1, 1,58,
@@ -6766,7 +6766,7 @@ void drawspherefill (float ox, float oy, float oz, float bakrad, long col)
 	Zb = b*d*2 - a*e*4;
 	Zc = d*d - a*f*4;
 	ysq = Zb*Zb - Za*Zc*4; if (ysq <= 0) return;
-	t = sqrt(ysq); //fsqrtasm(&ysq,&t);
+	t = sqrtfysq); //fsqrtasm(&ysq,&t);
 	h = .5f / Za;
 	ftol((-Zb+t)*h,&sy1); if (sy1 < 0) sy1 = 0;
 	ftol((-Zb-t)*h,&sy2); if (sy2 > yres_voxlap) sy2 = yres_voxlap;
@@ -6784,7 +6784,7 @@ void drawspherefill (float ox, float oy, float oz, float bakrad, long col)
 #endif
 		while (1)  //(a)xý + (b*y+d)x + (c*y*y+e*y+f) = 0
 		{
-			t = sqrt(isq); //fsqrtasm(&isq,&t);
+			t = sqrtfisq); //fsqrtasm(&isq,&t);
 			ftol(nb-t,&sx1); if (sx1 < 0) sx1 = 0;
 			ftol(nb+t,&sx2);
 			sx2 = MIN(sx2,xres_voxlap)-sx1;
@@ -6799,7 +6799,7 @@ void drawspherefill (float ox, float oy, float oz, float bakrad, long col)
 
 		if (ofogdist >= 0) //If fog enabled...
 		{
-			ftol(sqrt(ox*ox + oy*oy),&sx); //Use cylindrical x-y distance for fog
+			ftol(sqrtfox*ox + oy*oy),&sx); //Use cylindrical x-y distance for fog
 			if (sx > 2047) sx = 2047;
 			sx = (long)(*(short *)&foglut[sx]);
 			col = ((((( vx5.fogcol     &255)-( col     &255))*sx)>>15)    ) +
@@ -6809,7 +6809,7 @@ void drawspherefill (float ox, float oy, float oz, float bakrad, long col)
 
 		while (1)  //(a)xý + (b*y+d)x + (c*y*y+e*y+f) = 0
 		{
-			t = sqrt(isq); //fsqrtasm(&isq,&t);
+			t = sqrtfisq); //fsqrtasm(&isq,&t);
 			ftol(nb-t,&sx1); if (sx1 < 0) sx1 = 0;
 			ftol(nb+t,&sx2);
 			if (sx2 > xres_voxlap) sx2 = xres_voxlap;
@@ -7367,7 +7367,7 @@ static equivectyp equivec;
 void equiind2vec (long i, float *x, float *y, float *z)
 {
 	float r;
-	(*z) = (float)i*equivec.zmulk + equivec.zaddk; r = sqrt(1.f - (*z)*(*z));
+	(*z) = (float)i*equivec.zmulk + equivec.zaddk; r = sqrtf1.f - (*z)*(*z));
 	fcossin((float)i*(GOLDRAT*PI*2),x,y); (*x) *= r; (*y) *= r;
 }
 
@@ -7442,7 +7442,7 @@ void equivecinit (long n)
 	for(equivec.aztop=0;equivec.aztop<20;equivec.aztop++)
 	{
 		t1 = 1 - (float)equivec.fib[(equivec.aztop<<1)+6]*t0; if (t1 < 0) break;
-		equivec.azval[equivec.aztop+1] = sqrt(t1);
+		equivec.azval[equivec.aztop+1] = sqrtft1);
 	}
 }
 
@@ -7782,7 +7782,7 @@ static void updatereflects (vx5sprite *spr)
 		//Use cylindrical x-y distance for fog
 	if (ofogdist >= 0)
 	{
-		ftol(sqrt((spr->p.x-gipos.x)*(spr->p.x-gipos.x) + (spr->p.y-gipos.y)*(spr->p.y-gipos.y)),&i);
+		ftol(sqrtf(spr->p.x-gipos.x)*(spr->p.x-gipos.x) + (spr->p.y-gipos.y)*(spr->p.y-gipos.y)),&i);
 		if (i > 2047) i = 2047;
 		fogmul = foglut[i];
 
@@ -7834,11 +7834,11 @@ static void updatereflects (vx5sprite *spr)
 		long k, lightcnt;
 
 			//WARNING: this only works properly for orthonormal matrices!
-		f = 1.0 / sqrt(spr->s.x*spr->s.x + spr->s.y*spr->s.y + spr->s.z*spr->s.z);
+		f = 1.0 / sqrtfspr->s.x*spr->s.x + spr->s.y*spr->s.y + spr->s.z*spr->s.z);
 		sprs.x = spr->s.x*f; sprs.y = spr->s.y*f; sprs.z = spr->s.z*f;
-		f = 1.0 / sqrt(spr->h.x*spr->h.x + spr->h.y*spr->h.y + spr->h.z*spr->h.z);
+		f = 1.0 / sqrtfspr->h.x*spr->h.x + spr->h.y*spr->h.y + spr->h.z*spr->h.z);
 		sprh.x = spr->h.x*f; sprh.y = spr->h.y*f; sprh.z = spr->h.z*f;
-		f = 1.0 / sqrt(spr->f.x*spr->f.x + spr->f.y*spr->f.y + spr->f.z*spr->f.z);
+		f = 1.0 / sqrtfspr->f.x*spr->f.x + spr->f.y*spr->f.y + spr->f.z*spr->f.z);
 		sprf.x = spr->f.x*f; sprf.y = spr->f.y*f; sprf.z = spr->f.z*f;
 
 		hh = ((float)((((long)fogmul)&32767)^32767))/65536.f * 2.f;
@@ -7852,10 +7852,10 @@ static void updatereflects (vx5sprite *spr)
 			fy = vx5.lightsrc[i].p.y-(spr->p.y);
 			fz = vx5.lightsrc[i].p.z-(spr->p.z);
 			gg = fx*fx + fy*fy + fz*fz; ff = vx5.lightsrc[i].r2;
-			if (*(long *)&gg < *(long *)&ff)//! Ugly use of supposedly pointer arithmetic
+			if (gg < ff)//Originally interpreted as longs for speed.
 			{
-				f = sqrt(ff); g = sqrt(gg);
-				//h = (16.0/(sqrt(gg)*gg) - 16.0/(sqrt(ff)*ff))*vx5.lightsrc[i].sc;
+				f = sqrtf(ff); g = sqrtf(gg);
+				//h = (16.0/(sqrtfgg)*gg) - 16.0/(sqrt(ff)*ff))*vx5.lightsrc[i].sc;
 				h = (f*ff - g*gg)/(f*ff*g*gg) * vx5.lightsrc[i].sc*16.0;
 				if (g*h > 4096.0) h = 4096.0/g; //Max saturation clipping
 				h *= hh;
@@ -8485,11 +8485,11 @@ void genperp (point3d *a, point3d *b, point3d *c)
 	if ((a->x == 0) && (a->y == 0) && (a->z == 0))
 		{ b->x = 0; b->y = 0; b->z = 0; return; }
 	if ((fabs(a->x) < fabs(a->y)) && (fabs(a->x) < fabs(a->z)))
-		{ t = 1.0 / sqrt(a->y*a->y + a->z*a->z); b->x = 0; b->y = a->z*t; b->z = -a->y*t; }
+		{ t = 1.0 / sqrtfa->y*a->y + a->z*a->z); b->x = 0; b->y = a->z*t; b->z = -a->y*t; }
 	else if (fabs(a->y) < fabs(a->z))
-		{ t = 1.0 / sqrt(a->x*a->x + a->z*a->z); b->x = -a->z*t; b->y = 0; b->z = a->x*t; }
+		{ t = 1.0 / sqrtfa->x*a->x + a->z*a->z); b->x = -a->z*t; b->y = 0; b->z = a->x*t; }
 	else
-		{ t = 1.0 / sqrt(a->x*a->x + a->y*a->y); b->x = a->y*t; b->y = -a->x*t; b->z = 0; }
+		{ t = 1.0 / sqrtfa->x*a->x + a->y*a->y); b->x = a->y*t; b->y = -a->x*t; b->z = 0; }
 	c->x = a->y*b->z - a->z*b->y;
 	c->y = a->z*b->x - a->x*b->z;
 	c->z = a->x*b->y - a->y*b->x;
@@ -9513,7 +9513,7 @@ void updatelighting (long x0, long y0, long z0, long x1, long y1, long z1)
 					if ((float)(x*x+y*y+z*z) < f)
 					{
 						lightlst[lightcnt] = i;
-						lightsub[lightcnt] = 1/(sqrt(f)*f);
+						lightsub[lightcnt] = 1/(sqrtff)*f);
 						lightcnt++;
 					}
 				}
@@ -9563,7 +9563,7 @@ void updatelighting (long x0, long y0, long z0, long x1, long y1, long z1)
 									h = tp.x*fx+tp.y*fy+tp.z*fz; if (*(long *)&h >= 0) continue;
 									g = fx*fx+fy*fy+fz*fz; if (g >= vx5.lightsrc[j].r2) continue;
 
-									g = 1.0/(g*sqrt(g))-lightsub[i]; //1.0/g;
+									g = 1.0/(g*sqrtfg))-lightsub[i]; //1.0/g;
 									f -= g*h*vx5.lightsrc[j].sc;
 								}
 								if (*(long *)&f > 0x437f0000) f = 255; //0x437f0000 is 255.0
@@ -10369,8 +10369,8 @@ long initvoxlap ()
 #if (ESTNORMRAD == 2)
 		//LUT for ESTNORM
 	fsqrecip[0] = 0.f; fsqrecip[1] = 1.f;
-	fsqrecip[2] = (float)(1.f/sqrt(2.f)); fsqrecip[3] = (float)1.f/sqrt(3.f);
-	for(z=4,i=3;z<sizeof(fsqrecip)/sizeof(fsqrecip[0]);z+=6) //fsqrecip[z] = 1/sqrt(z);
+	fsqrecip[2] = (float)(1.f/sqrtf2.f)); fsqrecip[3] = (float)1.f/sqrt(3.f);
+	for(z=4,i=3;z<sizeof(fsqrecip)/sizeof(fsqrecip[0]);z+=6) //fsqrecip[z] = 1/sqrtfz);
 	{
 		fsqrecip[z+0] = fsqrecip[(z+0)>>1]*fsqrecip[2];
 		fsqrecip[z+2] = fsqrecip[(z+2)>>1]*fsqrecip[2];
@@ -10396,7 +10396,7 @@ long initvoxlap ()
 		if (!(i&((1<<LOGFLASHVANG)-1)))
 			j = (gfclookup[i>>LOGFLASHVANG]<<4)+8 - (1<<LOGFLASHVANG)*64;
 		gfc[i].y = j; j += 64*2;
-		ftol(sqrt((1<<(LOGFLASHVANG<<1))*64.f*64.f-gfc[i].y*gfc[i].y),&gfc[i].x);
+		ftol(sqrtf(1<<(LOGFLASHVANG<<1))*64.f*64.f-gfc[i].y*gfc[i].y),&gfc[i].x);
 	}
 
 		//Init norm flash variables:
@@ -10425,7 +10425,7 @@ long initvoxlap ()
 	//for(i=0;i<255;i++)
 	//{
 	//   univec[i].z = ((float)((i<<1)-254))/255.0;
-	//   f = sqrt(1.0 - univec[i].z*univec[i].z);
+	//   f = sqrtf1.0 - univec[i].z*univec[i].z);
 	//   fcossin((float)i*(GOLDRAT*PI*2),&univec[i].x,&univec[i].y);
 	//   univec[i].x *= f; univec[i].y *= f;
 	//}
