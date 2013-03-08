@@ -6137,7 +6137,8 @@ floodfill3dskip2:;
 	//hollowfill
 void sethollowfill ()
 {
-	long i, j, x, y, z0, z1, (*bakcolfunc)(lpoint3d *);//! confusing declaration
+	long i, j, x, y, z0, z1;
+	long (*bakcolfunc)(lpoint3d *);
 	char *v;
 
 	vx5.minx = 0; vx5.maxx = VSID;
@@ -7510,9 +7511,11 @@ kv6data *genmipkv6 (kv6data *kv6)
 	xptr = (intptr_t)(nkv6 + 1); //Start of data block
 	xyptr = (unsigned short *)(xptr + (xs<<2));
 	voxptr = (kv6voxtype *)(((uintptr_t)xyptr) + xysiz);
-	n = 0;
 
-	v0[0] = kv6->vox; sxyi2 = kv6->ylen; sxyi2i = (kv6->ysiz<<1);
+	n = 0;
+	v0[0] = kv6->vox;
+	sxyi2 = kv6->ylen;
+	sxyi2i = (kv6->ysiz<<1);
 	for(x=0;x<xs;x++)
 	{
 		v0[1] = v0[0]+kv6->xlen[x<<1];
@@ -7541,7 +7544,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 			{
 				z = 0x7fffffff;
 				for(i=3;i>=0;i--)
-					if ((vs[i] < ve[i]) && (vs[i]->z < z)) z = vs[i]->z;
+					if ((vs[i] < ve[i]) && (vs[i]->z < z)) z = vs[i]->z;//! ? Pointer comparison
 				if (z == 0x7fffffff) break;
 
 				z |= 1;
@@ -7550,7 +7553,7 @@ kv6data *genmipkv6 (kv6data *kv6)
 				for(i=3;i>=0;i--)
 					for(zz=z-1;zz<=z;zz++)
 					{
-						if ((vs[i] >= ve[i]) || (vs[i]->z > zz)) continue;
+						if ((vs[i] >= ve[i]) || (vs[i]->z > zz)) continue;//! ? Pointer comparison
 						r += (vs[i]->col&0xff00ff); //MMX-style trick!
 						g += (vs[i]->col&  0xff00);
 						//b += (vs[i]->col&    0xff);

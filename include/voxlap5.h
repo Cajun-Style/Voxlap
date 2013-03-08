@@ -65,7 +65,7 @@ typedef struct kv6data
 	float xpiv, ypiv, zpiv;// Pivot point in voxel units
 	unsigned long numvoxs;//? xsiz * ysiz
 	long namoff;
-	struct kv6data *lowermip;
+	struct kv6data *lowermip;//Equivalent half-size model
 	kv6voxtype *vox;      //numvoxs*sizeof(kv6voxtype)
 	unsigned long *xlen;  //xsiz*sizeof(long). ?I.e. last byte in block
 	unsigned short *ylen; //xsiz*ysiz*sizeof(short). ?I.e. last byte in block
